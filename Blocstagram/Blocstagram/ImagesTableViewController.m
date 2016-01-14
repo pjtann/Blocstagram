@@ -122,25 +122,42 @@
 }
 
 
-/*
+
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     // Return NO if you do not want the specified item to be editable.
     return YES;
 }
-*/
 
-/*
+
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+        NSLog(@"IndexPath value..: %@", indexPath);
+        
+        
+        // I found you must delete the object from your array first, then delete from view. Doing the [tableView deleteRowsAtIndexPa...... line first crashes the application
+        // must delete from your model/array first, then from the actual screen view table
+        UIImage *image = self.images[indexPath.row];
+        [self.images removeObject:image];
+        NSLog(@"Images array count..: %lu", (unsigned long)self.images.count);
+        
+
+        // delete from the screen view table AFTER deleting from your array/model
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+
+        
+        [self.tableView reloadData];
+        
+        
+        
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
+
 
 /*
 // Override to support rearranging the table view.
