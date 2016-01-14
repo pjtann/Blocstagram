@@ -10,8 +10,6 @@
 #import "ImagesTableViewController.h"
 
 
-
-
 @interface AppDelegate ()
 
 @end
