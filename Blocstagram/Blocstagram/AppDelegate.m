@@ -9,8 +9,6 @@
 #import "AppDelegate.h"
 #import "ImagesTableViewController.h"
 
-// adding comment to try and get this piece of junk github to work correctly
-
 
 
 
