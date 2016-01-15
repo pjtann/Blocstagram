@@ -15,6 +15,7 @@
 
 @interface ImagesTableViewController ()
 
+@property (nonatomic, strong) NSArray *items;
 
 @end
 
@@ -54,7 +55,15 @@
 }
 
 
-
+-(NSArray *) items{
+    
+    self.items = [DataSource sharedInstance].mediaItems;
+    // Question 1 - Why can't I place an NSLog here; crashes? NSLog(@"Value of items..: %@", self.items);
+    // Question 2 - I'm still using "[DataSource...." here, just replaced it everywhere else, but to not use it at all how would we eliminate it completely as instructed; how would we get to the media array without completely rebuilding it here?
+    
+    return _items;
+    
+}
 
 
 - (void)didReceiveMemoryWarning {
@@ -75,13 +84,14 @@
     // Return the number of rows in the section.
     
     //return self.images.count;
-    return [DataSource sharedInstance].mediaItems.count;
+    //return [DataSource sharedInstance].mediaItems.count;
+    return self.items.count;    
     
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier forIndexPath:indexPath];
     
     // Configure the cell...
 //    // #1 - takes the identifier string and compares it with its roster of registered table view cells. Dequeue will either return:
@@ -117,7 +127,9 @@
 //    UIImage *image = self.images[indexPath.row];
 //    imageView.image = image;
     
-        Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+        //Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    
+        Media *item = self.items[indexPath.row];
         imageView.image = item.image;
     
     
@@ -132,7 +144,8 @@
     //UIImage *image = self.images[indexPath.row];
     //return image.size.height;
     
-    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    //Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    Media *item = self.items[indexPath.row];
     UIImage *image = item.image;
     
     //return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
