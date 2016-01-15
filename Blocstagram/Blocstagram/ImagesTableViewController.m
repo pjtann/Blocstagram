@@ -7,6 +7,11 @@
 //
 
 #import "ImagesTableViewController.h"
+#import "DataSource.h"
+#import "Media.h"
+#import "User.h"
+#import "Comment.h"
+
 
 @interface ImagesTableViewController ()
 
@@ -20,7 +25,7 @@
     self = [super initWithStyle:style];
     if (self) {
         // custom initialization
-        self.images = [NSMutableArray array];
+        //self.images = [NSMutableArray array];
         
     }
     return self;
@@ -29,14 +34,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    for (int i = 1; i<= 10; i++) {
-        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
-        UIImage *image = [UIImage imageNamed:imageName];
-        if (image) {
-            [self.images addObject:image];
-            
-        }
-    }
+//    for (int i = 1; i<= 10; i++) {
+//        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
+//        UIImage *image = [UIImage imageNamed:imageName];
+//        if (image) {
+//            [self.images addObject:image];
+//            
+//        }
+//    }
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"imageCell"];
     
@@ -48,14 +53,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
--(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    //return 300;
-    
-    UIImage *image = self.images[indexPath.row];
-    //return image.size.height;
-    return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
-    
-}
+
 
 
 
@@ -76,7 +74,9 @@
 //#warning Incomplete method implementation.
     // Return the number of rows in the section.
     
-    return self.images.count;
+    //return self.images.count;
+    return [DataSource sharedInstance].mediaItems.count;
+    
 }
 
 
@@ -114,13 +114,31 @@
     }
     
     
-    UIImage *image = self.images[indexPath.row];
-    imageView.image = image;
+//    UIImage *image = self.images[indexPath.row];
+//    imageView.image = image;
+    
+        Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+        imageView.image = item.image;
+    
     
     
     return cell;
 }
 
+
+-(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    //return 300;
+    
+    //UIImage *image = self.images[indexPath.row];
+    //return image.size.height;
+    
+    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    UIImage *image = item.image;
+    
+    //return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
+    return image.size.height / image.size.width * CGRectGetWidth(self.view.frame);
+    
+}
 
 /*
 // Override to support conditional editing of the table view.
