@@ -27,6 +27,7 @@
 		6DFF25281C48962D00D81F6E /* Media.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF25271C48962D00D81F6E /* Media.m */; };
 		6DFF252B1C48976F00D81F6E /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF252A1C48976F00D81F6E /* Comment.m */; };
 		6DFF252E1C48987200D81F6E /* DataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF252D1C48987200D81F6E /* DataSource.m */; };
+		6DFF25311C496F8300D81F6E /* MediaTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF25301C496F8300D81F6E /* MediaTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		6DFF252A1C48976F00D81F6E /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
 		6DFF252C1C48987200D81F6E /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		6DFF252D1C48987200D81F6E /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
+		6DFF252F1C496F8300D81F6E /* MediaTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaTableViewCell.h; sourceTree = "<group>"; };
+		6DFF25301C496F8300D81F6E /* MediaTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaTableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +122,8 @@
 				6DFF246C1C449A3300D81F6E /* Supporting Files */,
 				6DFF250C1C45F09A00D81F6E /* ImagesTableViewController.h */,
 				6DFF250D1C45F09A00D81F6E /* ImagesTableViewController.m */,
+				6DFF252F1C496F8300D81F6E /* MediaTableViewCell.h */,
+				6DFF25301C496F8300D81F6E /* MediaTableViewCell.m */,
 				6DFF25231C48943800D81F6E /* User.h */,
 				6DFF25261C48962D00D81F6E /* Media.h */,
 				6DFF25291C48976F00D81F6E /* Comment.h */,
@@ -285,6 +290,7 @@
 			files = (
 				6DFF25251C48943800D81F6E /* User.m in Sources */,
 				6DFF252B1C48976F00D81F6E /* Comment.m in Sources */,
+				6DFF25311C496F8300D81F6E /* MediaTableViewCell.m in Sources */,
 				6DFF25281C48962D00D81F6E /* Media.m in Sources */,
 				6DFF24721C449A3300D81F6E /* AppDelegate.m in Sources */,
 				6DFF252E1C48987200D81F6E /* DataSource.m in Sources */,
