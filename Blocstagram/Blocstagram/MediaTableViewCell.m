@@ -29,15 +29,13 @@ static UIFont *boldFont;
 static UIColor *usernameLabelGray;
 static UIColor *commentLabelGray;
 static UIColor *linkColor;
-static NSParagraphStyle *paragraphStyle;
+static NSMutableParagraphStyle *paragraphStyle;
 
+// used for the right justification of every other comment
+static NSMutableParagraphStyle *paragraphStyleRight;
 
 
 @implementation MediaTableViewCell
-
-//- (void)awakeFromNib {
-//    // Initialization code
-//}
 
 
 //  load is a special method which is called once and only once per class. Any class may implement load. If it does, when the class is first used, the method will be executed before anything else happens:
@@ -48,13 +46,33 @@ static NSParagraphStyle *paragraphStyle;
     commentLabelGray = [UIColor colorWithRed:0.898 green:0.898 blue:0.898 alpha:1]; // #e5e5e5
     linkColor = [UIColor colorWithRed:0.345 green:0.314 blue:0.427 alpha:1]; // #58506d
     
+    // used for the usernameAndCaptionString method text to set the style of the caption text
     NSMutableParagraphStyle *mutableParagraphStyle = [[NSMutableParagraphStyle alloc] init];
     mutableParagraphStyle.headIndent = 20.0;
     mutableParagraphStyle.firstLineHeadIndent = 20.0;
     mutableParagraphStyle.tailIndent = -20.0;
     mutableParagraphStyle.paragraphSpacingBefore = 5;
+    mutableParagraphStyle.alignment = 4; // align values - 0=left, 1=center, 2=right, 3= justified, 4=natural
     
     paragraphStyle = mutableParagraphStyle;
+    
+//    // added these to get a right justified style to use later on alternating comments
+    NSMutableParagraphStyle *mutableParagraphStyleRight = [[[NSMutableParagraphStyle alloc] init] mutableCopy];
+    //mutableParagraphStyleRight = mutableParagraphStyle;
+    
+    mutableParagraphStyleRight.headIndent = 20.0;
+    mutableParagraphStyleRight.firstLineHeadIndent = 20.0;
+    mutableParagraphStyleRight.tailIndent = -20.0;
+    mutableParagraphStyleRight.paragraphSpacingBefore = 5;
+    
+    // attempted alignments using property name, not integer value, but don't work
+    //mutableParagraphStyleRight.alignment = NSTextAlignmentRight;
+    //mutableParagraphStyleRight setAlignment: NSTextAlignmentRight];
+    //mutableParagraphStyleRight.alignment = NSTextAlignmentJustified;
+    
+    mutableParagraphStyleRight.alignment = 2; // align right; only works with the value in there, not the variable/property name such as "NSTextAlignmentRight" align values - 0=left, 1=center, 2=right, 3= justified, 4=natural
+  
+    paragraphStyleRight = mutableParagraphStyleRight;
     
     
 }
@@ -76,12 +94,18 @@ static NSParagraphStyle *paragraphStyle;
     [mutableUsernameAndCaptionString addAttribute:NSFontAttributeName value:[boldFont fontWithSize:usernameFontSize] range:usernameRange];
     [mutableUsernameAndCaptionString addAttribute:NSForegroundColorAttributeName value:linkColor range:usernameRange];
     
+    // increase the kerning (character spacing) of the image caption text
+    [mutableUsernameAndCaptionString addAttribute:NSKernAttributeName value:[NSNumber numberWithFloat:10.0] range:NSMakeRange(0, [mutableUsernameAndCaptionString length])];
+    
+    
     return mutableUsernameAndCaptionString;
     
     
 }
 
 - (NSAttributedString *) commentString {
+    
+    int mycounter = 0;
     
     // commentString wll be a concatenation of every comment found for that particular media item. We use a for loop to iterate over each comment and create its own respective attributed string which we then append to commentString once it's ready.
     
@@ -90,17 +114,40 @@ static NSParagraphStyle *paragraphStyle;
     for (Comment *comment in self.mediaItem.comments) {
         // Make a string that says "username comment" followed by a line break
         NSString *baseString = [NSString stringWithFormat:@"%@ %@\n", comment.from.userName, comment.text];
-        
+
         // Make an attributed string, with the "username" bold
         
         NSMutableAttributedString *oneCommentString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : lightFont, NSParagraphStyleAttributeName : paragraphStyle}];
+        
         
         // we calculate the NSRange of the username within the base string and apply font changes
         NSRange usernameRange = [baseString rangeOfString:comment.from.userName];
         [oneCommentString addAttribute:NSFontAttributeName value:boldFont range:usernameRange];
         [oneCommentString addAttribute:NSForegroundColorAttributeName value:linkColor range:usernameRange];
         
+        if (mycounter == 0) {
+            NSLog(@"Counter 0 for Orange Comment");
+            // this line colors the text orange for the first comment in every entry item
+            [oneCommentString addAttribute:NSForegroundColorAttributeName value:[UIColor orangeColor] range: NSMakeRange(0, [oneCommentString length])];
+            
+        }
+        
+        //if (mycounter == 1) {
+        if (mycounter % 2) { // if it is then it's odd, otherwise it's even
+            NSLog(@"Counter odd number..: %i", mycounter);
+            // for every other (odd) comments right justify the text alignment
+            
+            [oneCommentString addAttribute: NSParagraphStyleAttributeName value:paragraphStyleRight range:NSMakeRange(0, [oneCommentString length])];
+            
+        }
+        
         [commentString appendAttributedString:oneCommentString];
+
+        
+        // set alignment back to default left justified
+        paragraphStyle.alignment = NSTextAlignmentLeft;
+        
+        mycounter ++;
     }
     
     return commentString;
@@ -142,9 +189,6 @@ static NSParagraphStyle *paragraphStyle;
     self.commentLabel.attributedText = [self commentString];
     
 }
-
-
-
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
