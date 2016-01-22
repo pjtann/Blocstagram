@@ -15,7 +15,11 @@
 
 
 
-@interface DataSource ()
+@interface DataSource () {
+   
+    NSMutableArray *_mediaItems;
+    
+}
 
 @property (nonatomic, strong) NSArray *mediaItems;
 
@@ -42,6 +46,62 @@
     return self;
     
 }
+
+#pragma mark - Key/Value Observing
+
+-(NSUInteger) countOfMediaItems {
+    
+    return self.mediaItems.count;
+    
+}
+
+-(id) objectInMediaItemsAtIndex:(NSUInteger)index {
+    return [self.mediaItems objectAtIndex:index];
+    
+}
+
+-(NSArray *) mediaItemsAtIndexes:(NSIndexSet *)indexes{
+    return [self.mediaItems objectAtIndex:indexes];
+    
+}
+
+-(void) insertObject:(Media *)object inMediaItemsAtIndex:(NSUInteger)index{
+    [_mediaItems insertObject:object atIndex:index];
+    
+}
+
+-(void) removeObjectFromMediaItemsAtIndex:(NSUInteger)index{
+    [_mediaItems removeObjectAtIndex:index];
+    
+}
+
+-(void) replaceObjectInMediaItemsAtIndex:(NSUInteger)index withObject:(id)object {
+    [_mediaItems replaceObjectAtIndex:index withObject:object];
+    
+}
+
+
+// The below method implementation for this method may seem odd given we know that DataSource has a reference to _mediaItems. Why do we use mutableArrayValueForKey: instead of modifying the _mediaItems array directly? If we remove the item from our underlying data source without going through KVC methods, no objects (including ImagesTableViewController) will receive a KVO notification.
+
+-(void) deleteMediaItem: (Media *) item{
+    NSMutableArray *mutableArrayWithKVO =[self mutableArrayValueForKey:@"mediaItems"];
+    [mutableArrayWithKVO removeObject:item];
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // The addRandomData method:
 // -loads every placeholder image in our app

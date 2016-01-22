@@ -36,16 +36,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    for (int i = 1; i<= 10; i++) {
-//        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
-//        UIImage *image = [UIImage imageNamed:imageName];
-//        if (image) {
-//            [self.images addObject:image];
-//            
-//        }
-//    }
     
-    //[self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"imageCell"];
+    [[DataSource sharedInstance] addObserver:self forKeyPath:@"mediaItems" options:0 context:nil];
+    
     [self.tableView registerClass:[MediaTableViewCell class] forCellReuseIdentifier:@"mediaCell"];
     
     // Uncomment the following line to preserve selection between presentations.
@@ -55,7 +48,62 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+-(void) dealloc {
+    [[DataSource sharedInstance] removeObserver:self forKeyPath:@"mediaItems"];
+    
+}
 
+-(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+    if (object == [DataSource sharedInstance] && [keyPath isEqualToString:@"mediaItems"]) {
+        // we know mediaItems has changed so let's see what kind of change it is
+        NSKeyValueChange kindOfChange = [change[NSKeyValueChangeKindKey] unsignedIntegerValue];
+        
+        NSLog(@"Value of change dictionary constant - kindOfChange..: %lu", (unsigned long)kindOfChange);
+        
+        if (kindOfChange == NSKeyValueChangeSetting){
+            // someone set a brand new images array
+            [self.tableView reloadData];
+
+            // The comments below refer to the else if statements starting below these comments
+            // This else if block checks to make sure that the change which occurred is one of the remaining options: insert, remove or replace. We recover an NSIndexSet for each modified index. For example, if images 2 and 3 were removed from mediaItems, those two values would be found in this set.
+            
+            //We create and provide an NSArray of NSIndexPath objects at #1 to update the table view's rows. All the rows are in a single section and are ordered by their location in the mediaItems array. Therefore, we enumerate indexSetOfChanges and add to a brand new array, indexPathsThatChanged.
+            
+            //#2: Before we tell the table which rows have been modified, removed or inserted, we prepare it for updates by calling beginUpdates. This lets the table accumulate the modifications we pass to it in preparation for when we call its complementary method, endUpdates. Once endUpdates is invoked, the table takes all of the changes made to its underlying structure since beginUpdates was called and animates itself to represent the new structure.
+            
+        } else if (kindOfChange == NSKeyValueChangeInsertion ||
+                         kindOfChange == NSKeyValueChangeRemoval ||
+                         kindOfChange == NSKeyValueChangeReplacement) {
+        // We have an incremental change: inserted, deleted, or replaced images
+        
+        // Get a list of the index (or indices) that changed
+        NSIndexSet *indexSetOfChanges = change[NSKeyValueChangeIndexesKey];
+        
+        // #1 - Convert this NSIndexSet to an NSArray of NSIndexPaths (which is what the table view animation methods require) add the objects at those indexes that have changed to this new array
+        NSMutableArray *indexPathsThatChanged = [NSMutableArray array];
+        [indexSetOfChanges enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+            NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+            [indexPathsThatChanged addObject:newIndexPath];
+        }];
+        
+        // #2 - Call `beginUpdates` to tell the table view we're about to make changes
+        [self.tableView beginUpdates];
+        
+        // Tell the table view what the changes are
+        if (kindOfChange == NSKeyValueChangeInsertion) {
+            [self.tableView insertRowsAtIndexPaths:indexPathsThatChanged withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else if (kindOfChange == NSKeyValueChangeRemoval) {
+            [self.tableView deleteRowsAtIndexPaths:indexPathsThatChanged withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else if (kindOfChange == NSKeyValueChangeReplacement) {
+            [self.tableView reloadRowsAtIndexPaths:indexPathsThatChanged withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+        
+        // Tell the table view that we're done telling it about changes, and to complete the animation
+        [self.tableView endUpdates];
+            
+        }
+    }
+}
 
 
 
@@ -66,17 +114,11 @@
 
 #pragma mark - Table view data source
 
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-////#warning Potentially incomplete method implementation.
-//    // Return the number of sections.
-//    return 1;
-//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-//#warning Incomplete method implementation.
-    // Return the number of rows in the section.
     
-    //return self.images.count;
+    // Return the number of rows in the section.
+
     return [DataSource sharedInstance].mediaItems.count;
     
 }
@@ -85,43 +127,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
     
-    // Configure the cell...
-//    // #1 - takes the identifier string and compares it with its roster of registered table view cells. Dequeue will either return:
-//    a brand new cell of the type we registered, or
-//    a used one that is no longer visible on screen.
-//    Cells are recycled as they scroll off screen in order to preserve memory.
-    
-   // UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"imageCell" forIndexPath:indexPath];
-    // #2 - configure the cell...set imageViewTag to an arbitrary number - what matters is that it remains consistent. A numerical tag can be attached to any UIView and used later to recover it from its superview by invoking viewWithTag:. This is a quick and dirty way for us to recover the UIImageView which will host the image for this cell.
-    
-   // static NSInteger imageViewTag = 1234;
-    //UIImageView *imageView = (UIImageView*)[cell.contentView viewWithTag:imageViewTag];
-    
-    // #3 - we handle the case when viewWithTag: fails to recover a UIImageView. That means it didn't have one and therefore it's a brand new cell. We know it's a new cell because we plan to add a UIImageView to each cell we come across. Therefore, on the second time around, it should already be there.
-    
-//    if (!imageView) {
-//        // this is a new cell, it doesn't have an image view yet
-//        imageView = [[UIImageView alloc] init];
-//        imageView.contentMode = UIViewContentModeScaleToFill; // UIViewContent... means the image will be stretched both horizontally and vertically to fill the bounds of the UIImageView.
-//        
-//        imageView.frame = cell.contentView.bounds;
-//        
-//        // #4 - This property lets its superview know how to resize it when the superview's width or height changes. These are called "bit-wise flags" and we set by OR-ing them together using |.
-//        imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-//        
-//        // Finally, we set the tag of our new UIImageView before we add it to contentView as a subview.
-//        imageView.tag = imageViewTag;
-//        [cell.contentView addSubview:imageView];
-//        
-//    }
-    
-    
-//    UIImage *image = self.images[indexPath.row];
-//    imageView.image = image;
-//    
-//        Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
-//        imageView.image = item.image;
-//    
+   
   
     MediaTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"mediaCell" forIndexPath:indexPath];
     cell.mediaItem = [DataSource sharedInstance].mediaItems[indexPath.row];
@@ -131,17 +137,9 @@
 
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    //return 300;
-    
-    //UIImage *image = self.images[indexPath.row];
-    //return image.size.height;
     
     Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
-    //UIImage *image = item.image;
-    
-    //return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
-    //return image.size.height / image.size.width * CGRectGetWidth(self.view.frame);
-    //return 300 + (image.size.height / image.size.width * CGRectGetWidth(self.view.frame));
+
     return [MediaTableViewCell heightForMediaItem:item width:CGRectGetWidth(self.view.frame)];
     
 }
@@ -154,17 +152,19 @@
 }
 */
 
-/*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+        
+        Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+        [[DataSource sharedInstance] deleteMediaItem:item];
+//        
+//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }
 }
-*/
+
 
 /*
 // Override to support rearranging the table view.
