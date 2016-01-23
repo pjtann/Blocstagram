@@ -20,6 +20,7 @@
 
 -(void) deleteMediaItem: (Media *) item;
 
+-(void) insertObject:(Media *)object inMediaItemsAtIndex:(NSUInteger)index;
 
 
 @end

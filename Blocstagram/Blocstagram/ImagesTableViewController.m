@@ -125,12 +125,11 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
-   
   
     MediaTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"mediaCell" forIndexPath:indexPath];
     cell.mediaItem = [DataSource sharedInstance].mediaItems[indexPath.row];
+    
+    NSLog(@"indexPath.row value..: %lu", indexPath.row);
     
     return cell;
 }
@@ -158,19 +157,42 @@
         // Delete the row from the data source
         
         Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+
         [[DataSource sharedInstance] deleteMediaItem:item];
+
+        // my additions - instead of deleting the item; move it to the top of the display. Declared the "insertObject...." method in teh DataSource.h file to allow me to call it and then called it to insert the object selected at position zero in the display array and then reloaded the data table with the new array order. Also added “titleForDeleteConfirmation…..” method I found to change the “Delete” text to custom text of moving the item to top of list.
+
+        [[DataSource sharedInstance] insertObject:item inMediaItemsAtIndex:0];
+        
+        [tableView reloadData];
+        
+        
+        // *** end of my additions
+        
 //        
 //    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
 //        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }
 }
 
+// add this method call to accomodate the change from deleting an item to moving it to the top of the display list
+-(NSString *) tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    return @"Move This Item To Top Of List!";
+    
+}
+
+
 
 /*
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    
+    
+    
 }
 */
+
 
 /*
 // Override to support conditional rearranging of the table view.

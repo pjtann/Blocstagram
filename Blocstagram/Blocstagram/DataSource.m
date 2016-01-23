@@ -67,6 +67,7 @@
 
 -(void) insertObject:(Media *)object inMediaItemsAtIndex:(NSUInteger)index{
     [_mediaItems insertObject:object atIndex:index];
+   
     
 }
 
