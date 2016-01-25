@@ -39,6 +39,12 @@
     
     [[DataSource sharedInstance] addObserver:self forKeyPath:@"mediaItems" options:0 context:nil];
     
+    // to support the pull-to-refresh action of pulling down the screen to refresh
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshControldidFire:) forControlEvents:UIControlEventValueChanged];
+    
+    
+    
     [self.tableView registerClass:[MediaTableViewCell class] forCellReuseIdentifier:@"mediaCell"];
     
     // Uncomment the following line to preserve selection between presentations.
@@ -52,6 +58,43 @@
     [[DataSource sharedInstance] removeObserver:self forKeyPath:@"mediaItems"];
     
 }
+
+// supports the pull-to-refresh action
+-(void) refreshControldidFire:(UIRefreshControl *) sender{
+    [[DataSource sharedInstance] requestNewItemsWithCompletionHandler:^(NSError *error){
+     // The only thing our code block does ([sender endRefreshing];) is tell the UIRefreshControl to stop spinning and hide itself.
+        
+        [sender endRefreshing];
+    }];
+    
+     
+}
+
+// At #3, infiniteScrollIfNecessary checks whether or not the user has scrolled to the last photo. This is accomplished by inspecting an array of NSIndexPath objects which represent the cells visible on screen. We call lastObject on the NSArray returned by indexPathsForVisibleRows to recover the index path of the cell shown at the very bottom of the table. If that cell represents the last image in the _mediaItems array, we call requestOldItemsWithCompletionHandler: in order to recover more.
+-(void) infiniteScrollIfNecessary{
+    // #3
+    NSIndexPath *bottomIndexPath = [[self.tableView indexPathsForVisibleRows] lastObject];
+    
+    if (bottomIndexPath && bottomIndexPath.row == [DataSource sharedInstance].mediaItems.count - 1) {
+        // the very last cell is on the screen
+        [[DataSource sharedInstance] requestOldItemsWithCompletionHandler:nil];
+        
+    }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+// #4 - needs a little more explanation. UITableView is a subclass of UIScrollView. A scroll view, plainly stated, is a UI element which scrolls. When its content size is larger than its frame, a pan gesture moves its content. A scroll view can be scrolled horizontally and/or vertically. (A table view is locked into vertical-only scrolling.) The scroll view has a delegate protocol with many methods in it, one of which is scrollViewDidScroll:. This delegate method is invoked when the scroll view is scrolled in any direction. As the user scrolls the table view, this method will be called repeatedly. It's a good place to check whether or not the last image in our array has made it onto the screen.
+-(void) scrollViewDidScroll:(UIScrollView *)scrollView  {
+    [self infiniteScrollIfNecessary];
+    
+}
+
+
+
+
+
+
 
 -(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if (object == [DataSource sharedInstance] && [keyPath isEqualToString:@"mediaItems"]) {
