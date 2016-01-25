@@ -1,0 +1,30 @@
+** Foundation 32 - Infinite Scroll and Pull-To-Refresh **
+
+
+Within `infiniteScrollIfNecessary`, we call:
+
+```
+[[DataSource sharedInstance] requestOldItemsWithCompletionHandler:nil];
+
+In `refreshControlDidFire:`, we call:
+[[DataSource sharedInstance] requestNewItemsWithCompletionHandler:^(NSError *error) {
+    [sender endRefreshing];
+}];
+```
+
+* Why does one call require us to pass a completion handler, but in the other we pass nil?
+* How do the new images get to the table view?
+
+** 1. Why does one call require us to pass a completion handler, but in the other we pass nil? **
+
+I don’t really know so I’m going to take a guess at it and hope to discuss these questions in our next meeting.
+
+A completion handler is typically meant to be passed back with asynchronous type communications where one step is completed before starting another in a sort of a sequential manner. Apparently the refresh for loading new images method is designed to require a response so we can know when there are no longer any images being sent to load. 
+
+For the request old items method returning nil which is relative to the infinite scroll it is based on the user action of scrolling the screen and so will end when the user scrolling action ends and start again when the user starts scrolling again.
+
+** 2. How do the new images get to the table view? **
+
+I don’t really know on this one too so I’m going to take another guess at it and hope to discuss these questions in our next meeting.
+
+For the pull to refresh action we defined the refresh control in the view did load and previously set the current view (self) to be an observer for changes in the table cells ‘mediaItems’. So I guess if the position of any cells changes as with the refresh request dragging down the cells and reaching the end of the table cells displayed it then looks for updates and re-displays the table with those changes.
