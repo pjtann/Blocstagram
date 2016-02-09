@@ -20,6 +20,10 @@ typedef void (^NewItemCompletionBlock)(NSError *error);
 
 +(instancetype) sharedInstance;
 
+// property to store the access token
+@property (nonatomic, strong, readonly) NSString *accessToken;
+
+
 @property (nonatomic, strong, readonly) NSArray *mediaItems;
 
 //But how will any class be able to modify the array if it's trapped inside of DataSource? Let's add a method to DataSource which lets other classes delete a media item. Added below method and the class Media declaration above for this purpose.
@@ -29,6 +33,8 @@ typedef void (^NewItemCompletionBlock)(NSError *error);
 -(void) requestNewItemsWithCompletionHandler: (NewItemCompletionBlock) completionHandler;
 
 -(void) requestOldItemsWithCompletionHandler: (NewItemCompletionBlock) completionHandler;
+
++(NSString *) instagramClientID;
 
 
 

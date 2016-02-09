@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D83F38B1C5FF427003D4954 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83F38A1C5FF427003D4954 /* LoginViewController.m */; };
 		6DFF246F1C449A3300D81F6E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF246E1C449A3300D81F6E /* main.m */; };
 		6DFF24721C449A3300D81F6E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF24711C449A3300D81F6E /* AppDelegate.m */; };
 		6DFF247A1C449A3300D81F6E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6DFF24791C449A3300D81F6E /* Images.xcassets */; };
@@ -41,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6D83F3891C5FF427003D4954 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		6D83F38A1C5FF427003D4954 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		6DFF24691C449A3300D81F6E /* Blocstagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocstagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DFF246D1C449A3300D81F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6DFF246E1C449A3300D81F6E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -141,6 +144,8 @@
 			children = (
 				6DFF246D1C449A3300D81F6E /* Info.plist */,
 				6DFF246E1C449A3300D81F6E /* main.m */,
+				6D83F3891C5FF427003D4954 /* LoginViewController.h */,
+				6D83F38A1C5FF427003D4954 /* LoginViewController.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -293,6 +298,7 @@
 				6DFF25311C496F8300D81F6E /* MediaTableViewCell.m in Sources */,
 				6DFF25281C48962D00D81F6E /* Media.m in Sources */,
 				6DFF24721C449A3300D81F6E /* AppDelegate.m in Sources */,
+				6D83F38B1C5FF427003D4954 /* LoginViewController.m in Sources */,
 				6DFF252E1C48987200D81F6E /* DataSource.m in Sources */,
 				6DFF246F1C449A3300D81F6E /* main.m in Sources */,
 				6DFF250E1C45F09A00D81F6E /* ImagesTableViewController.m in Sources */,
