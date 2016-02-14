@@ -37,6 +37,8 @@
     UINavigationController *navVC = [[UINavigationController alloc] init];
     LoginViewController *loginVC = [[LoginViewController alloc] init];
     [navVC setViewControllers:@[loginVC] animated:YES];
+
+
     
     [[NSNotificationCenter defaultCenter] addObserverForName:LoginViewControllerDidGetAccessTokenNotification object:nil queue:nil usingBlock:^(NSNotification *note){
         ImagesTableViewController *imagesVC = [[ImagesTableViewController alloc] init];
@@ -52,14 +54,42 @@
     self.window.backgroundColor = [UIColor whiteColor];
     
     [self.window makeKeyAndVisible];
+  
+    NSLog(@"Here in delegate at line 58.");
     
+    
+    
+//    // add a back button to navigation bar
+//    
+//    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style: UIBarButtonItemStylePlain target:self action:@selector(goBack)];
+//    self.navigationItem.leftBarButtonItem = backButton;
+//    NSLog(@"End of viewDidLoad...:");
+//    
     
     return YES;
 }
 
+
+
+
+
+//- (void) goBack {    // Go back task over-here
+//    // TODO
+//    NSLog(@"Line 63 in goBack method..:");
+//    
+//    //NSLog(@"%@",self.navigationController.viewControllers);
+//    UINavigationController *navigationController = self.navigationController;
+//    [navigationController popViewControllerAnimated:YES];
+//    
+//    //self.viewDidLoad;
+//    //[navigationController popToRootViewControllerAnimated:YES];
+//}
+
+
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {

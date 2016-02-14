@@ -48,8 +48,34 @@ NSString *const LoginViewControllerDidGetAccessTokenNotification = @"LoginViewCo
         [self.webView loadRequest:request];
         
     }
+    
+    // add a back button to navigation bar
+    
+    //UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style: UIBarButtonItemStylePlain target:self.navigationController action:@selector(goBack)];
+
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style: UIBarButtonItemStylePlain target:self action:@selector(goBack)];
+    
+    self.navigationItem.leftBarButtonItem = backButton;
+    NSLog(@"End of viewDidLoad...:");
+    
+    
 
 }
+
+- (void) goBack {    // Go back task over-here
+    // TODO
+    NSLog(@"Line 64 in goBack method..:");
+    
+    NSLog(@"%@",self.navigationController.viewControllers);
+    UINavigationController *navigationController = self.navigationController;
+    [navigationController popViewControllerAnimated:YES];
+  
+    //self.viewDidLoad;
+    //[navigationController popToRootViewControllerAnimated:YES];
+
+    
+}
+
 
 // set the web view's frame:
 -(void) viewWillLayoutSubviews{
