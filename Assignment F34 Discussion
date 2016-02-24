@@ -1,0 +1,41 @@
+** Foundation 34 - IOS Blocstagram: Retrieve Images **
+
+
+Pretend you work at Instagram and a new developer just joined your team. You have to explain to this person how the new code in this checkpoint works.
+Write a summary of how the code in this checkpoint works. Answer these questions:
+	•	What approach is used for parsing JSON? Why?
+	•	How are new images downloaded and displayed?
+	•	How is pull-to-refresh implemented, from when the user pulls on the table view to when new images appear?
+Use Markdown formatting to format any code snippets you include in your description.
+
+
+** 1. Write a summary of how the code in this checkpoint works. **
+
+We established parsing code in each of the separate model classes that associate with the major sections of the expected JSON code. We will call each of these classes to parse their respective section of the JSON code rather than placing all that parsing code the one centralized DataSource program file.
+
+After we log in we attempt to locate the data and connect to it through use of the NSURL statements and then call the parsing sections of code from the respective model classes for user, media, and comment. 
+
+As the download begins the data is placed into an array and then into the table to display the images with the associated captions and comments.
+
+** 2. What approach is used for parsing JSON? Why? **
+
+The general approach for parsing the JSON data is to use model objects/classes such as user, media, and comments in this case so as to parse out the pertinent components to each separate model rather than trying to parse it all in one centralized class such as datasource as in this case. 
+
+This may not make too much difference when parsing only a few sections as we are doing, but of course the more parsing components that you would need to be parsing the move bulky the code would become if you have it centralized in one program file making it more complex and less flexible than splitting out into the separate class parsing.
+
+
+
+
+** 3. How are new images downloaded and displayed? **
+
+We connect to the defined URL in the background and assuring that an image exists we then run the process in main queue again to place the object into an array with an associated index position. Somehow when a new image is downloaded a notification occurs which then triggers reloading that associated row with that index number into the table.
+
+I don’t see or understand where this notification actually occurs or where/why it is detected by some portion of the code. As part of this notification It appears the feed dictionary is the source that it used by the ` parseDataFromFeedDictionary ` method that is somehow initiated by this notification
+
+** 4. How is pull-to-refresh implemented, from when the user pulls on the table view to when new images appear? **
+
+I guess the gesture of pull to refresh calls the request new items method which uses the media items array to store the new images and then call the populate data method to populate the KVO array used to populate the tableview.
+
+Overall I’m just not following the flow through the program files and how each component is being called and how the KVO is being used so would like to step through the flow.
+
+
