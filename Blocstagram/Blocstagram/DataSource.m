@@ -32,6 +32,10 @@
 
 @property (nonatomic, assign) BOOL isLoadingOlderItems;
 
+//Sometimes you can infinite scroll, but there are no more older messages. We'll add a new property - self.thereAreNoMoreOlderMessages - to prevent pointless requests:
+@property (nonatomic, assign) BOOL thereAreNoMoreOlderMessages;
+
+
 
 
 @end
@@ -71,7 +75,8 @@
         
         /// Now that we have our data, let's take a look at it. Add a call to this method once our access token arrives. Got a token; populate the initial data
         
-        [self populateDataWithParameters:nil];
+        [self populateDataWithParameters:nil completionHandler:nil];
+        
         
         
     }];
@@ -119,7 +124,11 @@
     
 }
 
+
+// called on pull-to-refresh
 -(void) requestNewItemsWithCompletionHandler:(NewItemCompletionBlock)completionHandler{
+    // Let's also reset thereAreNoMoreOlderMessages if the user does a pull-to-refresh:
+    self.thereAreNoMoreOlderMessages = NO;
     
     // #1 - At #1, we check self.isRefreshing. If a request for recovering new items is already in progress, we return immediately. Otherwise, we set isRefreshing to YES and continue.
     if (self.isRefreshing == NO) {
@@ -127,48 +136,51 @@
         
     }
     
-    // #2 - At #2, we create a new random media object and append it to the front of the KVC array. We place the media item at index 0 because that is the index of the top-most table cell.
-//    Media *media = [[Media alloc] init];
-//    media.user = [self randomUser];
-//    media.image = [UIImage imageNamed:@"10.jpg"];
-//    media.caption = [self randomSentence];
-//    
-//    NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
-//    [mutableArrayWithKVO insertObject:media atIndex:0];
-   
-    // TODO: add images
+    NSString *minID = [[self.mediaItems firstObject] idNumber];
+    NSDictionary *parameters;
     
-    self.isRefreshing = NO;
     
     // Finally, we check if a completion handler was passed before calling it with nil. We do not provide an NSError because creating a fake, local piece of data like media will rarely result in an issue. The NSError will be employed once we begin communicating with Instagram.
     
-    if (completionHandler) {
-        completionHandler(nil);
+    if (minID) {
+        parameters = @{@"min_id": minID};
         
     }
+   
+//    We'll now update requestNewItemsWithCompletionHandler: (which is called on pull-to-refresh) to use this method to get newer items. We'll use the MIN_ID parameter from the last checkpoint to let Instagram know we're only interested in items with a higher ID (i.e., newer items). We'll also pass back the error object if it's there.
+    
+    [self populateDataWithParameters:parameters completionHandler:^(NSError *error){
+        self.isRefreshing = NO;
+        
+        if (completionHandler){
+            completionHandler(error);
+            
+        }
+    }];
 }
     
 -(void) requestOldItemsWithCompletionHandler: (NewItemCompletionBlock) completionHandler {
         
-        if  (self.isLoadingOlderItems == NO){
+        if  (self.isLoadingOlderItems == NO && self.thereAreNoMoreOlderMessages == NO){
             self.isLoadingOlderItems = YES;
-//            Media *media = [[Media alloc] init];
-//            media.user = [self randomUser];
-//            media.image = [UIImage imageNamed:@"1.jpg"];
-//            media.caption = [self randomSentence];
-//            
-//            NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
-//            [mutableArrayWithKVO addObject: media];
+
+            
+            NSString *maxID = [[self.mediaItems lastObject] idNumber];
+            NSDictionary *parameters;
             
             
-            // TODO: add images
-            
-            self.isLoadingOlderItems = NO;
-            
-            if (completionHandler){
-                completionHandler(nil);
+            if (maxID) {
+                parameters = @{@"max_id": maxID};
                 
             }
+            
+            [self populateDataWithParameters:parameters completionHandler:^(NSError *error){
+                self.isLoadingOlderItems = NO;
+                if (completionHandler){
+                    completionHandler (error);
+                    
+                }
+            }];
         }
     }
     
@@ -338,7 +350,10 @@
 */
 
 
-- (void) populateDataWithParameters:(NSDictionary *)parameters {
+//- (void) populateDataWithParameters:(NSDictionary *)parameters {
+
+// Since we know those methods use a completion handler (NewItemCompletionBlock), let's start by allowing populateDataWithParameters: to accept a completion block as well.
+- (void) populateDataWithParameters:(NSDictionary *)parameters completionHandler:(NewItemCompletionBlock)completionHandler {
     if (self.accessToken) {
         // only try to get the data if there's an access token
         
@@ -367,22 +382,118 @@
                     NSDictionary *feedDictionary = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&jsonError];
                     
                     if (feedDictionary) {
+                        // If there's an error, pass it to completionHandler. If the request is successful, pass nil for the error object:
+                        
                         dispatch_async(dispatch_get_main_queue(), ^{
                             // done networking, go back on the main thread
                             [self parseDataFromFeedDictionary:feedDictionary fromRequestWithParameters:parameters];
+                            
+                            if (completionHandler) {
+                                completionHandler(nil);
+                            }
+                        });
+                    } else if (completionHandler){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            completionHandler(jsonError);
                         });
                     }
+                }else if (completionHandler){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completionHandler(webError);
+                    });
+
                 }
             }
         });
     }
 }
 
+//we can put it all together to parse the entire Instagram feed when it arrives:
+
 - (void) parseDataFromFeedDictionary:(NSDictionary *) feedDictionary fromRequestWithParameters:(NSDictionary *)parameters {
-    NSLog(@"%@", feedDictionary);
+    //NSLog(@"%@", feedDictionary);
+    
+    NSArray *mediaArray = feedDictionary[@"data"];
+    
+    NSMutableArray *tmpMediaItems = [NSMutableArray array];
+    
+    for (NSDictionary *mediaDictionary in mediaArray) {
+        Media *mediaItem = [[Media alloc] initWithDictionary:mediaDictionary];
+        
+        if (mediaItem) {
+            [tmpMediaItems addObject:mediaItem];
+            [self downloadImageForMediaItem:mediaItem]; // This code is inefficient because it starts downloading 100 images simultaneously. The more appropriate logic, which we'll implement later, starts downloading images as users scroll through the feed.
+            
+        }
+    }
+
+
+    
+    NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
+    
+    if (parameters[@"min_id"]) {
+        // This was a pull-to-refresh request
+        
+        NSRange rangeOfIndexes = NSMakeRange(0, tmpMediaItems.count);
+        NSIndexSet *indexSetOfNewObjects = [NSIndexSet indexSetWithIndexesInRange:rangeOfIndexes];
+        
+        [mutableArrayWithKVO insertObjects:tmpMediaItems atIndexes:indexSetOfNewObjects];
+        
+    } else if (parameters[@"max_id"]){
+        // this was an infinite scroll request
+        
+        if (tmpMediaItems.count == 0) {
+            // disable infinite scroll, since there are no more older messages
+            self.thereAreNoMoreOlderMessages = YES;
+            
+            
+        }else{
+            [mutableArrayWithKVO addObjectsFromArray:tmpMediaItems];
+            
+        }
+    } else {
+        [self willChangeValueForKey:@"mediaItems"];
+        self.mediaItems = tmpMediaItems;
+        [self didChangeValueForKey:@"mediaItems"];
+    }
+
 }
 
+// This method follows the same pattern as when we connect to the Instagram API. Notably:
+// 1. dispatch_async to a background queue
+// 2. Make an NSURLRequest
+// 3. Use NSURLConnection to connect and get the NSData
+// 4. Attempt to convert the NSData into the expected object type (a UIImage here)
+// 5. If it works, dispatch_async back to the main queue, and update the data model with the results
+// This data model update will trigger the KVO notification to reload the individual row in the table view.
 
+- (void) downloadImageForMediaItem:(Media *)mediaItem {
+    if (mediaItem.mediaURL && !mediaItem.image) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSURLRequest *request = [NSURLRequest requestWithURL:mediaItem.mediaURL];
+            
+            NSURLResponse *response;
+            NSError *error;
+            NSData *imageData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+            
+            if (imageData) {
+                UIImage *image = [UIImage imageWithData:imageData];
+                
+                if (image) {
+                    mediaItem.image = image;
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
+                        NSUInteger index = [mutableArrayWithKVO indexOfObject:mediaItem];
+                        [mutableArrayWithKVO replaceObjectAtIndex:index withObject:mediaItem];
+                    });
+                }
+            } else {
+                NSLog(@"Error downloading image: %@", error);
+            }
+        });
+    }
+}
 
 
 
