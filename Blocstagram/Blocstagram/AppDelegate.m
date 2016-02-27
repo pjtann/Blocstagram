@@ -35,14 +35,22 @@
     // Our app should use this logic: at launch, show the login controller. Register for the LoginViewControllerDidGetAccessTokenNotification notification. When this notification posts, switch the root view controller from the login controller to the table controller
     // This will start the app with the login view controller, and switch to the images table controller once an access token is obtained.
     UINavigationController *navVC = [[UINavigationController alloc] init];
-    LoginViewController *loginVC = [[LoginViewController alloc] init];
-    [navVC setViewControllers:@[loginVC] animated:YES];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:LoginViewControllerDidGetAccessTokenNotification object:nil queue:nil usingBlock:^(NSNotification *note){
+    if (![DataSource sharedInstance].accessToken) {
+        
+        
+        LoginViewController *loginVC = [[LoginViewController alloc] init];
+        [navVC setViewControllers:@[loginVC] animated:YES];
+        
+        [[NSNotificationCenter defaultCenter] addObserverForName:LoginViewControllerDidGetAccessTokenNotification object:nil queue:nil usingBlock:^(NSNotification *note){
+            ImagesTableViewController *imagesVC = [[ImagesTableViewController alloc] init];
+            [navVC setViewControllers:@[imagesVC] animated:YES];
+            
+        }];
+    }else{
         ImagesTableViewController *imagesVC = [[ImagesTableViewController alloc] init];
         [navVC setViewControllers:@[imagesVC] animated:YES];
-        
-    }];
+    }
     
     self.window.rootViewController = navVC;
     

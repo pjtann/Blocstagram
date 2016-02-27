@@ -11,7 +11,7 @@
 
 @class User; // use this class declaration rather than an import in a header file for best practice; you still use the import in the implementation file though
 
-@interface Media : NSObject
+@interface Media : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSString *idNumber;
 @property (nonatomic, strong) User *user;

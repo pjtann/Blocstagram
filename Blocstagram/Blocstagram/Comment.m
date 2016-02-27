@@ -26,5 +26,35 @@
     return self;
 }
 
+#pragma mark - NSCoding
+
+
+// initWithCoder turns an object that has been read from disk back into an object
+-(instancetype) initWithCoder:(NSCoder *)aDecoder{
+    
+    self = [super init];
+    
+    if (self) {
+        self.idNumber = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(idNumber))];
+        self.text = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(text))];
+        self.from = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(from))];
+
+        
+        
+    }
+    return self;
+    
+}
+
+// encodeWithCoder - we are given and NSCoder object and we save data into it and then later in the program write it to disk
+-(void) encodeWithCoder:(NSCoder *)aCoder{
+    
+    // convert selectors into strings
+    [aCoder encodeObject:self.idNumber forKey:NSStringFromSelector(@selector(idNumber))];
+    [aCoder encodeObject:self.text forKey:NSStringFromSelector(@selector(text))];
+    [aCoder encodeObject:self.from forKey:NSStringFromSelector(@selector(from))];
+    
+}
+
 
 @end

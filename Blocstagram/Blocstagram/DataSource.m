@@ -11,6 +11,8 @@
 #import "Media.h"
 #import "Comment.h"
 #import "LoginViewController.h"
+#import <UICKeyChainStore.h>
+
 
 
 // arc4random_uniform() - This function used in this application file returns a random, non-negative number less than the number supplied to it. We add 2 to the result (so all random data will have at least two characters), and use the result to create strings of random length and sentences of random word count.
@@ -55,11 +57,46 @@
     self = [super init];
     
     if (self) {
-        // call the method to create the random data until we are able to get data from Instagram
-        //[self addRandomData];
+        // check for the token
+        self.accessToken = [UICKeyChainStore stringForKey:@"access token"];
         
-        // call the method to register and respond to the notification for data from Instagram
-        [self registerForAccessTokenNotification];
+        // if token is not there, then register it, if it is then go through to data population
+        if (!self.accessToken) {
+            [self registerForAccessTokenNotification];
+            
+        }else{
+            //[self populateDataWithParameters:nil completionHandler:nil];
+            
+            // read the file at launch
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                
+                //This read code is the inverse of the write code. It tries to find the file at the path and convert it into an array. If it finds an array of at least one item, it displays it immediately. (We make a mutableCopy since the copy stored to disk is immutable.) If not, it gets the initial data from the server.
+                //The only notable difference is at #1 below. Since the image download happens in a different queue, the download may not finish by the time the files are saved. If this happens, the image property will be nil when they're unarchived. To account for this, we'll re-download any images for Media objects with a nil image. (Remember that downloadImageForMediaItem: will ignore any media items which already have images attached.)
+                
+                NSString *fullPath = [self pathForFilename:NSStringFromSelector(@selector(mediaItems))];
+                NSArray *storedMediaItems = [NSKeyedUnarchiver unarchiveObjectWithFile:fullPath];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (storedMediaItems.count > 0) {
+                        NSMutableArray *mutableMediaItems = [storedMediaItems mutableCopy];
+                        
+                        [self willChangeValueForKey:@"mediaItems"];
+                        self.mediaItems = mutableMediaItems;
+                        [self didChangeValueForKey:@"mediaItems"];
+                        // #1
+                        for (Media* mediaItem in self.mediaItems) {
+                            [self downloadImageForMediaItem:mediaItem];
+                        }
+                        
+                    } else {
+                        [self populateDataWithParameters:nil completionHandler:nil];
+                    }
+                });
+            });
+            
+            
+            
+        }
         
     }
     return self;
@@ -72,6 +109,9 @@
 -(void) registerForAccessTokenNotification{
     [[NSNotificationCenter defaultCenter] addObserverForName:LoginViewControllerDidGetAccessTokenNotification object: nil queue:nil usingBlock:^(NSNotification *note){
         self.accessToken = note.object;
+        
+        [UICKeyChainStore setString:self.accessToken forKey:@"access token"];
+        
         
         /// Now that we have our data, let's take a look at it. Add a call to this method once our access token arrives. Got a token; populate the initial data
         
@@ -186,171 +226,11 @@
     
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// The addRandomData method:
-// -loads every placeholder image in our app
-// -creates a Media model for it
-// -attaches a randomly generated User to it
-// -adds a random caption
-// -attaches a randomly generated number of Comments to it
-// -puts each media item into the mediaItems array
-
-/* // delete the random data methods below that are currently adding the random data when we get the connection to Instagram set.
--(void) addRandomData{
-    
-    NSMutableArray *randomMediaItems = [NSMutableArray array];
-    
-    for (int i = 1; i <= 10; i++){
-        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
-        UIImage *image = [UIImage imageNamed:imageName];
-        
-        if (image) {
-            Media *media = [[Media alloc] init];
-            media.user = [self randomUser];
-            media.image = image;
-            media.caption = [self randomSentence];
-            
-            NSUInteger commentCount = arc4random_uniform(10) + 2;
-            NSMutableArray *randomComments = [NSMutableArray array];
-            
-            for (int i = 0; i <= commentCount; i++) {
-                Comment *randomComment = [self randomComment];
-                [randomComments addObject:randomComment];
-                
-            }
-            
-            media.comments = randomComments;
-            
-            [randomMediaItems addObject:media];
-            
-        }
-    }
-    
-    self.mediaItems = randomMediaItems;
-    
-    
-}
-
-
--(User *) randomUser{
-    User *user = [[User alloc]init];
-    
-    user.userName = [self randomStringOfLength:arc4random_uniform(10) + 2];
-    
-    NSString *firstName = [self randomStringOfLength:arc4random_uniform(7) +2];
-    NSString *lastName = [self randomStringOfLength:arc4random_uniform(12) + 2];
-    user.fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
-    
-    return user;
-    
-}
-
-
--(Comment *) randomComment {
-    Comment *comment = [[Comment alloc] init];
-    
-    comment.from = [self randomUser];
-    comment.text = [self randomSentence];
-    
-    return comment;
-}
-
--(NSString *) randomSentence{
-    
-    NSUInteger wordCount = arc4random_uniform(20) + 2;
-    
-    NSMutableString *randomSentence = [[NSMutableString alloc]init];
-    
-    for (int i = 0; i <= wordCount; i++) {
-        NSString *randomWord = [self randomStringOfLength:arc4random_uniform(12) +2];
-        [randomSentence appendFormat:@"%@ ", randomWord];
-        
-    }
-    return randomSentence;
-}
-
--(NSString *) randomStringOfLength:(NSUInteger) len {
-   
-    NSString *alphabet = @"abcdefghijklmnopqrstuvwxyz";
-    
-    NSMutableString *s = [NSMutableString string];
-    for (NSUInteger i = 0U; i < len; i++) {
-        u_int32_t r = arc4random_uniform((u_int32_t)[alphabet length]);
-        unichar c = [alphabet characterAtIndex:r];
-        [s appendFormat:@"%C", c];
-        
-    }
-    
-    return [NSString stringWithString:s];
-    
-}
- */
-
 +(NSString *) instagramClientID{
     
     return @"d97c203c7ed74623977e555bad3a2225";
     
 }
-
-// Let's write a method to create this request, and turn the response from the Instagram API into a dictionary
-// EXPLANATION OF THE BELOW METHODS - populateWithDataParameters and parseDataFromFeeDictionary
-/*
- There's a lot of new stuff here. Here is a brief explanation of each new class or method.
- 
- dispatch_async
- 
- When you have long-running work, like network connections or complex calculations, you should do that work in the background. This allows your user interface - which always runs on the main queue - to remain responsive.
- 
- A common pattern - the one you see here - is to dispatch_async on to a background queue, and then when the long-running work is completed, dispatch_async back on to the main queue.
- 
- NSURLConnection
- 
- So far, when we've had an NSURLRequest, we've given it to a UIWebView for loading, rendering and displaying. When you don't want to directly display the data, you can use NSURLConnection to handle connecting to a server and downloading the data.
- 
- NSData
- 
- NSData is an object that represents any type of data. If the data is an image, you can convert it into a UIImage. If it's a string, you can convert it into an NSString.
- 
- Passing addresses into methods
- 
- In this code, we pass addresses into methods. This happens in three places: &response, &webError, and &jsonError.
- 
- This is a common hack implemented to allow methods to return more than one value.
- 
- For example, in this line:
- 
- NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&webError];
- NSURLConnection returns an NSData object. But it also wants to communicate some other information - metadata about the response (NSURLResponse) and possibly an error, if something went wrong (NSError).
- 
- Since Objective-C can only return one method, we pass in addresses of other variables as arguments, and the method sets them. This is commonly called "vending" - we would say that NSURLConnection's method returns an NSData and vends an NSURLRequest and an NSError.
- 
- JSON and NSJSONSerialization
- 
- On the Instagram API page, press the "response" button to see a sample of what the response data looks like.
- 
- The format of this data is called JSON, which is a way to organize strings, numbers, arrays, and dictionaries using standard symbols.
- 
- NSJSONSerialization is a class that converts this data into the more familiar NSDictionary and NSArray objects.
- 
- Serialization is the process of converting data from one format to another.
- For more info on JSON, see Bloc's Intro to Networking for Mobile Developers.
- 
-*/
-
-
-//- (void) populateDataWithParameters:(NSDictionary *)parameters {
 
 // Since we know those methods use a completion handler (NewItemCompletionBlock), let's start by allowing populateDataWithParameters: to accept a completion block as well.
 - (void) populateDataWithParameters:(NSDictionary *)parameters completionHandler:(NewItemCompletionBlock)completionHandler {
@@ -456,7 +336,34 @@
         self.mediaItems = tmpMediaItems;
         [self didChangeValueForKey:@"mediaItems"];
     }
+    
+    [self saveImages];
 
+}
+
+-(void) saveImages{
+    
+    if (self.mediaItems.count > 0) {
+        // write the changes to disk
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            // make an array to hold 50 items at a time, convert the array into NSData and save it to disk
+            NSUInteger numberOfItemsToSave = MIN(self.mediaItems.count, 50);
+            NSArray *mediaItemsToSave = [self.mediaItems subarrayWithRange:NSMakeRange(0, numberOfItemsToSave)];
+            
+            NSString *fullPath = [self pathForFilename:NSStringFromSelector(@selector(mediaItems))];
+            NSData *mediaItemData = [NSKeyedArchiver archivedDataWithRootObject:mediaItemsToSave];
+  
+            // NSDataWritingAtomic ensures a complete file is saved. Without it, we might corrupt our file if the app crashes while writing to disk. NSDataWritingFileProtectionCompleteUnlessOpen encrypts the data. This helps protect the user's privacy.
+            
+            NSError *dataError;
+            BOOL wroteSuccessfully = [mediaItemData writeToFile:fullPath options:NSDataWritingAtomic | NSDataWritingFileProtectionCompleteUnlessOpen error:&dataError];
+            
+            if (!wroteSuccessfully) {
+                NSLog(@"Couldn't write file: %@", dataError);
+            }
+        });
+    }
 }
 
 // This method follows the same pattern as when we connect to the Instagram API. Notably:
@@ -486,6 +393,9 @@
                         NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
                         NSUInteger index = [mutableArrayWithKVO indexOfObject:mediaItem];
                         [mutableArrayWithKVO replaceObjectAtIndex:index withObject:mediaItem];
+                        
+                        // save the images when a download completes
+                        [self saveImages];
                     });
                 }
             } else {
@@ -495,6 +405,15 @@
     }
 }
 
+// method to create a string containing the absolute path to the user's documents directory (like /somedir/someotherdir/filename
+
+-(NSString *) pathForFilename:(NSString *) filename{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths firstObject];
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:filename];
+    return dataPath;
+    
+}
 
 
 
