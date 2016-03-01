@@ -165,6 +165,7 @@
 }
 
 
+
 // called on pull-to-refresh
 -(void) requestNewItemsWithCompletionHandler:(NewItemCompletionBlock)completionHandler{
     // Let's also reset thereAreNoMoreOlderMessages if the user does a pull-to-refresh:
