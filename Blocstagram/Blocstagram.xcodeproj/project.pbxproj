@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D13572C1C8544FC00D4C327 /* MediaFullScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D13572B1C8544FC00D4C327 /* MediaFullScreenViewController.m */; };
 		6D83F38B1C5FF427003D4954 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83F38A1C5FF427003D4954 /* LoginViewController.m */; };
 		6DFF246F1C449A3300D81F6E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF246E1C449A3300D81F6E /* main.m */; };
 		6DFF24721C449A3300D81F6E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF24711C449A3300D81F6E /* AppDelegate.m */; };
@@ -45,6 +46,8 @@
 /* Begin PBXFileReference section */
 		3A8E17CC8097AB593EC1AEDF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		42361D5624E8000DDEA200AC /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		6D13572A1C8544FC00D4C327 /* MediaFullScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaFullScreenViewController.h; sourceTree = "<group>"; };
+		6D13572B1C8544FC00D4C327 /* MediaFullScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaFullScreenViewController.m; sourceTree = "<group>"; };
 		6D83F3891C5FF427003D4954 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		6D83F38A1C5FF427003D4954 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		6DFF24691C449A3300D81F6E /* Blocstagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocstagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,6 +145,8 @@
 				6DFF252D1C48987200D81F6E /* DataSource.m */,
 				6DFF25271C48962D00D81F6E /* Media.m */,
 				6DFF25241C48943800D81F6E /* User.m */,
+				6D13572A1C8544FC00D4C327 /* MediaFullScreenViewController.h */,
+				6D13572B1C8544FC00D4C327 /* MediaFullScreenViewController.m */,
 			);
 			path = Blocstagram;
 			sourceTree = "<group>";
@@ -368,6 +373,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D13572C1C8544FC00D4C327 /* MediaFullScreenViewController.m in Sources */,
 				6DFF25251C48943800D81F6E /* User.m in Sources */,
 				6DFF252B1C48976F00D81F6E /* Comment.m in Sources */,
 				6DFF25311C496F8300D81F6E /* MediaTableViewCell.m in Sources */,

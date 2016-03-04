@@ -12,7 +12,7 @@
 #import "User.h"
 
 
-@interface MediaTableViewCell ()
+@interface MediaTableViewCell () <UIGestureRecognizerDelegate> // declare that this class conforms to the gesture recognizer delegate protocol
 
 @property (nonatomic, strong) UIImageView *mediaImageView;
 @property (nonatomic, strong) UILabel *usernameAndCaptionLabel;
@@ -21,6 +21,16 @@
 @property (nonatomic, strong) NSLayoutConstraint *imageHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *usernameAndCaptionLabelHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *commentLabelHeightConstraint;
+
+// add a property for the gesture recognizer
+@property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
+
+// property for the long press recognizer
+@property (nonatomic, strong) UITapGestureRecognizer *longPressGestureRecognizer;
+
+
+
+
 
 
 
@@ -188,6 +198,22 @@ static NSParagraphStyle *paragraphStyle;
     if (self) {
         //iniitialize code
         self.mediaImageView = [[UIImageView alloc] init];
+        
+        // add the gesture recognizer to the image view
+        self.mediaImageView.userInteractionEnabled = YES;
+        self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapFired:)];
+        self.tapGestureRecognizer.delegate = self;
+        [self.mediaImageView addGestureRecognizer:self.tapGestureRecognizer];
+        
+        
+        // initialize the long press recognizer and add it to the image view
+        self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longPressFired)];
+        self.longPressGestureRecognizer.delegate = self;
+        [self.mediaImageView addGestureRecognizer:self.longPressGestureRecognizer];
+        
+        
+        
+        
         self.usernameAndCaptionLabel = [[UILabel alloc] init];
         self.usernameAndCaptionLabel.numberOfLines = 0;
         self.usernameAndCaptionLabel.backgroundColor = usernameLabelGray;
@@ -260,6 +286,31 @@ static NSParagraphStyle *paragraphStyle;
     return self;
 }
 
+// add the target method which will call cell:didTapImageView:
+#pragma mark - Image View
+
+-(void) tapFired:(UITapGestureRecognizer *)sender{
+    [self.delegate cell:self didTapImageView:self.mediaImageView];
+    
+    
+    
+}
+
+// inform the delegate of a long press. We make sure that state is UIGestureRecognizerStateBegan. We could alternatively check for UIGestureRecognizerStateRecognized, but then the method wouldn't get called until the user lifts their finger. (And if we don't check at all, the delegate method will get called twice: once when the recognizer begins, and again when the user lifts their finger.)
+- (void) longPressFired:(UILongPressGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [self.delegate cell:self didLongPressImageView:self.mediaImageView];
+    }
+}
+
+// If the user swipes the cell to show the delete button, and then taps on the cell, the expected behavior is to hide the delete button, not to zoom in on the image. To accomplish this, we'll make sure the gesture recognizer only fires while the cell isn't in editing mode:
+-(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+    return self.isEditing == NO;
+    
+}
+
+
+
 // We create a local cell and call layoutSubviews on it. Once that method returns, it is appropriately sized to fit all of its contents. We return the height of our temporary dummy cell.
 + (CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width {
     // Make a cell
@@ -283,6 +334,9 @@ static NSParagraphStyle *paragraphStyle;
     // get the actual height required for the cell
     return CGRectGetMaxY(layoutCell.commentLabel.frame);
 }
+
+
+
 
 
 @end

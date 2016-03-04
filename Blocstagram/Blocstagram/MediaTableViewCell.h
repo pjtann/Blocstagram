@@ -8,12 +8,29 @@
 
 #import <UIKit/UIKit.h>
 
-@class Media;
+@class Media, MediaTableViewCell; // added MediaTableViewCell for MediaTableViewCellDelegate protocol
+
+
+// define the protocol
+@protocol MediaTableViewCellDelegate <NSObject>
+
+// define method that will inform the cell's controller when teh user taps an image
+-(void) cell:(MediaTableViewCell *) cell didTapImageView:(UIImageView *) imageView;
+
+//method to trigger when a user does a long-press on an image
+-(void) cell:(MediaTableViewCell *) cell didLongPressImageView:(UIImageView *) imageView;
+
+
+@end
+
 
 
 @interface MediaTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) Media *mediaItem;
+// property for the tap image protocol and method
+@property (nonatomic, weak) id <MediaTableViewCellDelegate> delegate;
+
 
 // method to calculate teh precise height for each cell since no two cells are identical
 +(CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width;
