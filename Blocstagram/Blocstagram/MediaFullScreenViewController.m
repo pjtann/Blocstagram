@@ -59,8 +59,39 @@
     
     // user the contentSize property to pass in the size of the image
     self.scrollView.contentSize = self.media.image.size;
+
     
     
+    [self tapDoubleTapMethod];
+    
+    
+    
+    
+    
+//    // initialize the tap and double tap gesture properties
+//    self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapFired:)];
+//    
+//    self.doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTapFired:)];
+//    self.doubleTap.numberOfTapsRequired = 2;
+//    
+//    // requireGestureRecognizerToFail: allows one gesture recognizer to wait for another gesture recognizer to fail before it succeeds. Without this line, it would be impossible to double-tap because the single tap gesture recognizer would fire before the user had a chance to tap twice.
+//    [self.tap requireGestureRecognizerToFail:self.doubleTap];
+//    
+//    [self.scrollView addGestureRecognizer:self.tap];
+//    [self.scrollView addGestureRecognizer:self.doubleTap];
+  
+    
+    
+    
+    
+    
+    [self myShareButton];
+
+    
+    
+}
+
+-(void) tapDoubleTapMethod{
     // initialize the tap and double tap gesture properties
     self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapFired:)];
     
@@ -73,8 +104,47 @@
     [self.scrollView addGestureRecognizer:self.tap];
     [self.scrollView addGestureRecognizer:self.doubleTap];
     
+}
+
+
+-(void) myShareButton{
+    
+    NSLog(@"Begin share method..:");
+
+    // Create button
+    UIButton *myButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    
+    // message label
+    [myButton setTitle:@"Share" forState:UIControlStateNormal];
+    
+    // create the button frame
+    myButton.frame = CGRectMake(175, 10, 300, 140); // x,y,width,height
+    
+    // add button to view
+    [self.view addSubview:myButton];
+    
+    // add the action target for when someone hits the button
+    [myButton addTarget:self
+                 action:@selector(myShareButtonClicked:)
+       forControlEvents:UIControlEventTouchUpInside];
     
 }
+
+-(IBAction)myShareButtonClicked:(id)sender{
+    
+    NSLog(@"Inside button action method..:");
+    
+    //[self tapDoubleTapMethod];
+    [self tapFired:nil];
+    
+    
+    
+    
+}
+
+
+
+
 
 -(void) viewWillLayoutSubviews{
     [super viewWillLayoutSubviews];
