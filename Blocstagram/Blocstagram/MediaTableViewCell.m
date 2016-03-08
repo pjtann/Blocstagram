@@ -29,6 +29,9 @@
 @property (nonatomic, strong) UITapGestureRecognizer *longPressGestureRecognizer;
 
 
+// property for two finger gesture recognizer - assignment f37
+@property (nonatomic, strong) UITapGestureRecognizer *twoFingerGestureRecognizer;
+
 
 
 
@@ -211,6 +214,29 @@ static NSParagraphStyle *paragraphStyle;
         self.longPressGestureRecognizer.delegate = self;
         [self.mediaImageView addGestureRecognizer:self.longPressGestureRecognizer];
         
+   
+        // ASSIGNMENT F37 ....begin
+        
+        // initialize the two finger tap recognizer and add it to the image view
+        //self.mediaImageView = [[UIImageView alloc] init];
+        
+        // add the gesture recognizer to the image view
+        //self.mediaImageView.userInteractionEnabled = YES;
+        
+        self.mediaImageView.multipleTouchEnabled = YES;
+        
+        self.twoFingerGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(twoFingerTapFired)];
+        
+        
+        self.twoFingerGestureRecognizer.delegate = self;
+        [self.mediaImageView addGestureRecognizer:self.twoFingerGestureRecognizer];
+        
+        [self.twoFingerGestureRecognizer setNumberOfTouchesRequired:2];
+        
+        
+       // ASSIGNMENT F37 ......end
+        
+        
         
         
         
@@ -302,6 +328,29 @@ static NSParagraphStyle *paragraphStyle;
         [self.delegate cell:self didLongPressImageView:self.mediaImageView];
     }
 }
+
+
+
+// ASSIGNMENT f37 ..... begin
+
+
+
+// method for assignment f37 networking libary for when someone taps on a cell with two fingers
+-(void) twoFingerTapFired:(UITapGestureRecognizer *) sender{
+    
+    NSLog(@"Begin of twoFingerTapFired method...:");
+    
+    
+    
+    
+    
+}
+
+
+
+// ASSIGMENT F37 ..... end
+
+
 
 // If the user swipes the cell to show the delete button, and then taps on the cell, the expected behavior is to hide the delete button, not to zoom in on the image. To accomplish this, we'll make sure the gesture recognizer only fires while the cell isn't in editing mode:
 -(BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
