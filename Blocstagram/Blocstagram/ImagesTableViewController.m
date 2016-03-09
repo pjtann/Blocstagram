@@ -215,6 +215,16 @@
     }
 }
 
+// method to check whether we need images right before a cell displays. A tableview sends this message/method to it's delegate just before it uses "cell" to draw a row
+-(void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    Media *mediaItem = [DataSource sharedInstance].mediaItems[indexPath.row];
+    if (mediaItem.downloadState == MediaDownloadStateNeedsImage) {
+        [[DataSource sharedInstance] downloadImageForMediaItem:mediaItem];
+        
+    }
+}
+
+
 
 /*
 // Override to support rearranging the table view.

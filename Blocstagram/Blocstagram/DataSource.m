@@ -94,10 +94,7 @@
                         [self willChangeValueForKey:@"mediaItems"];
                         self.mediaItems = mutableMediaItems;
                         [self didChangeValueForKey:@"mediaItems"];
-                        // #1
-                        for (Media* mediaItem in self.mediaItems) {
-                            [self downloadImageForMediaItem:mediaItem];
-                        }
+
                         
                     } else {
                         [self populateDataWithParameters:nil completionHandler:nil];
@@ -311,7 +308,7 @@
         
         if (mediaItem) {
             [tmpMediaItems addObject:mediaItem];
-            [self downloadImageForMediaItem:mediaItem]; // This code is inefficient because it starts downloading 100 images simultaneously. The more appropriate logic, which we'll implement later, starts downloading images as users scroll through the feed.
+
             
         }
     }
@@ -386,6 +383,10 @@
 - (void) downloadImageForMediaItem:(Media *)mediaItem {
     if (mediaItem.mediaURL && !mediaItem.image) {
         
+        // set the download state when the download begins
+        mediaItem.downloadState = MediaDownloadStateDownloadInProgress;
+        
+        
        
         // similar to the AFnteworking implementation in the populateDateWithParameters method we implement here too for download of images into the array 
         
@@ -394,15 +395,47 @@
                                     success:^(AFHTTPRequestOperation *operation, id responseObject) {
                                         if ([responseObject isKindOfClass:[UIImage class]]) {
                                             mediaItem.image = responseObject;
+                                            
+                                            // if download is successful set the download state to has image
+                                            mediaItem.downloadState = MediaDownloadStateHasImage;
+                                            
                                             NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
                                             NSUInteger index = [mutableArrayWithKVO indexOfObject:mediaItem];
                                             [mutableArrayWithKVO replaceObjectAtIndex:index withObject:mediaItem];
+                                            [self saveImages];
+                                        }else {
+                                            mediaItem.downloadState = MediaDownloadStateNonRecoverableError;
+                                            
                                         }
                                         
                                         [self saveImages];
                                         
                                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                         NSLog(@"Error downloading image: %@", error);
+                                        
+                                // if there's an error during download we set the download state to has error
+                                        mediaItem.downloadState = MediaDownloadStateNonRecoverableError;
+                                        
+                                    // but, if the error is a recoverable type error we set the download state to retry the download with needs image again.
+                                        if ([error.domain isEqualToString:NSURLErrorDomain]) {
+                                            // A networking problem
+                                            if (error.code == NSURLErrorTimedOut ||
+                                                error.code == NSURLErrorCancelled ||
+                                                error.code == NSURLErrorCannotConnectToHost ||
+                                                error.code == NSURLErrorNetworkConnectionLost ||
+                                                error.code == NSURLErrorNotConnectedToInternet ||
+                                                error.code == kCFURLErrorInternationalRoamingOff ||
+                                                error.code == kCFURLErrorCallIsActive ||
+                                                error.code == kCFURLErrorDataNotAllowed ||
+                                                error.code == kCFURLErrorRequestBodyStreamExhausted) {
+                                                
+                                                // It might work if we try again
+                                                mediaItem.downloadState = MediaDownloadStateNeedsImage;
+                                            }
+                                        }
+                                        
+                                        
+                                        
                                     }];
         
         

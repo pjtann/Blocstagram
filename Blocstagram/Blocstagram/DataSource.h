@@ -34,6 +34,10 @@ typedef void (^NewItemCompletionBlock)(NSError *error);
 
 -(void) requestOldItemsWithCompletionHandler: (NewItemCompletionBlock) completionHandler;
 
+// this method will allow for other classes to request that images be downloaded
+-(void) downloadImageForMediaItem:(Media *) mediaItem;
+
+
 +(NSString *) instagramClientID;
 
 
