@@ -250,6 +250,7 @@ static NSParagraphStyle *paragraphStyle;
      
         // the height constraints, the setting identifier is optional. It has no effect on your app, but can make it easier to debug auto-layout constraints.
         // the section means "_commentLabel's height is equal to (nothing * 1) + 100."
+        
         self.imageHeightConstraint = [NSLayoutConstraint constraintWithItem:_mediaImageView
                                                                   attribute:NSLayoutAttributeHeight
                                                                   relatedBy:NSLayoutRelationEqual
@@ -324,6 +325,9 @@ static NSParagraphStyle *paragraphStyle;
 //    
 //    // Make it adjust the image view and labels
 //    [layoutCell layoutSubviews];
+    
+
+    
     layoutCell.frame = CGRectMake(0, 0, width, CGRectGetHeight(layoutCell.frame));
     
     
