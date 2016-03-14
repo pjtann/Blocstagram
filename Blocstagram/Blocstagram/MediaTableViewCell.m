@@ -10,6 +10,8 @@
 #import "Media.h"
 #import "Comment.h"
 #import "User.h"
+#import "LikeButton.h"
+
 
 
 @interface MediaTableViewCell () <UIGestureRecognizerDelegate> // declare that this class conforms to the gesture recognizer delegate protocol
@@ -27,6 +29,9 @@
 
 // property for the long press recognizer
 @property (nonatomic, strong) UITapGestureRecognizer *longPressGestureRecognizer;
+
+// property for the Like button
+@property (nonatomic, strong) LikeButton *likeButton;
 
 
 
@@ -174,6 +179,8 @@ static NSParagraphStyle *paragraphStyle;
     self.mediaImageView.image = _mediaItem.image;
     self.usernameAndCaptionLabel.attributedText = [self usernameAndCaptionString];
     self.commentLabel.attributedText = [self commentString];
+    self.likeButton.likeButtonState = mediaItem.likeState;
+    
     
 }
 
@@ -222,20 +229,28 @@ static NSParagraphStyle *paragraphStyle;
         self.commentLabel.numberOfLines = 0;
         self.commentLabel.backgroundColor = commentLabelGray;
         
-        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel]){
+        
+        // create teh like button
+        self.likeButton = [[LikeButton alloc] init];
+        [self.likeButton addTarget:self action:@selector(likePressed) forControlEvents:UIControlEventTouchUpInside];
+        self.likeButton.backgroundColor = usernameLabelGray;
+       // add the like button to the view hiearchy
+        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton]) {
+
             [self.contentView addSubview:view];
 
             // this property needs to be set to NO when using auto layout
             view.translatesAutoresizingMaskIntoConstraints = NO;
         }
         
-        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel);
+        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton);
         
         // _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
         
-        // Same as above
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
+        // Same as above - setting explicit width  for like button of 38
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
+        
         
         // Same as above
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_commentLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
@@ -285,6 +300,22 @@ static NSParagraphStyle *paragraphStyle;
     }
     return self;
 }
+
+
+#pragma mark - Liking
+
+// inform the delegate when the like button is tapped
+-(void) likePressed:(UIButton *)sender{
+    
+    NSLog(@"Inside likePressed in MTVC line 310..:");
+    
+    [self.delegate cellDidPressLikeButton:self];
+    
+    
+    
+}
+
+
 
 // add the target method which will call cell:didTapImageView:
 #pragma mark - Image View

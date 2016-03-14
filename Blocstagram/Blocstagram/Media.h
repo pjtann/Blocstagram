@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "LikeButton.h"
+
 
 // declare an enumeration for persisting the download state. Declares MediaDownloadState as equivalent to NSInteger with predefined values 0-3
 typedef NS_ENUM(NSInteger, MediaDownloadState) {
@@ -29,6 +31,11 @@ typedef NS_ENUM(NSInteger, MediaDownloadState) {
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) NSArray *comments;
+
+// property to keep the media item's state
+@property (nonatomic, assign) LikeState likeState;
+
+
 
 // property to keep track of an individual media items download state. Uses "assign" rather than strong or weak in the declaration because it's not an object; it's a simpler type
 @property (nonatomic, assign) MediaDownloadState downloadState;

@@ -20,6 +20,9 @@
 //method to trigger when a user does a long-press on an image
 -(void) cell:(MediaTableViewCell *) cell didLongPressImageView:(UIImageView *) imageView;
 
+//method to indicate that the like button was pressed
+-(void) cellDidPressLikeButton:(MediaTableViewCell *) cell;
+
 
 @end
 
