@@ -28,7 +28,7 @@
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 
 // property for the long press recognizer
-@property (nonatomic, strong) UITapGestureRecognizer *longPressGestureRecognizer;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 // property for the Like button
 @property (nonatomic, strong) LikeButton *likeButton;
@@ -214,7 +214,7 @@ static NSParagraphStyle *paragraphStyle;
         
         
         // initialize the long press recognizer and add it to the image view
-        self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longPressFired)];
+        self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longPressFired:)];
         self.longPressGestureRecognizer.delegate = self;
         [self.mediaImageView addGestureRecognizer:self.longPressGestureRecognizer];
         
@@ -232,7 +232,7 @@ static NSParagraphStyle *paragraphStyle;
         
         // create teh like button
         self.likeButton = [[LikeButton alloc] init];
-        [self.likeButton addTarget:self action:@selector(likePressed) forControlEvents:UIControlEventTouchUpInside];
+        [self.likeButton addTarget:self action:@selector(likePressed:) forControlEvents:UIControlEventTouchUpInside];
         self.likeButton.backgroundColor = usernameLabelGray;
        // add the like button to the view hiearchy
         for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton]) {

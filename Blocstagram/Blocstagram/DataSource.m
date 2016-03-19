@@ -135,7 +135,7 @@
     NSURL *baseURL = [NSURL URLWithString:@"http://api.instagram.com/v1/"];
     self.instagramOperationManager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:baseURL ];
     
-    AFJSONRequestSerializer *jsonSerializer = [AFJSONResponseSerializer serializer];
+    AFJSONResponseSerializer *jsonSerializer = [AFJSONResponseSerializer serializer];
     
     AFImageResponseSerializer *imageSerializer = [AFImageResponseSerializer serializer];
     imageSerializer.imageScale = 1.0;
@@ -217,9 +217,13 @@
 }
 
 -(NSArray *) mediaItemsAtIndexes:(NSIndexSet *)indexes{
-    return [self.mediaItems objectAtIndex:indexes];
+    return [self.mediaItems objectsAtIndexes:indexes];
     
 }
+
+
+
+
 
 -(void) insertObject:(Media *)object inMediaItemsAtIndex:(NSUInteger)index{
     [_mediaItems insertObject:object atIndex:index];
@@ -309,7 +313,9 @@
 
 +(NSString *) instagramClientID{
     
-    return @"d97c203c7ed74623977e555bad3a2225";
+    return @"d97c203c7ed74623977e555bad3a2225"; // my logon key
+    //return @"ac6921d2952f4140968635727471fb4d"; // donniebloc / bloc1234 key for other student
+
     
 }
 
@@ -326,7 +332,7 @@
         
         [mutableParameters addEntriesFromDictionary:parameters];
         
-        [self.instagramOperationManager GET:@"users/self/feed"
+        [self.instagramOperationManager GET:@"users/self/media/recent"
                                  parameters:mutableParameters
                                     success:^(AFHTTPRequestOperation *operation, id responseObject) {
                                         if ([responseObject isKindOfClass:[NSDictionary class]]) {
@@ -453,8 +459,16 @@
                                             
                                             NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
                                             NSUInteger index = [mutableArrayWithKVO indexOfObject:mediaItem];
-                                            [mutableArrayWithKVO replaceObjectAtIndex:index withObject:mediaItem];
+                                            if (index != NSNotFound) {
+                                                [mutableArrayWithKVO replaceObjectAtIndex:index withObject:mediaItem];
+                                            } else {
+                                                [mutableArrayWithKVO addObject:mediaItem];
+                                            }
                                             [self saveImages];
+                                            
+                                            
+                                            
+                                            
                                         }else {
                                             mediaItem.downloadState = MediaDownloadStateNonRecoverableError;
                                             
