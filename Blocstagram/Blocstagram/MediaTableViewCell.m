@@ -33,9 +33,8 @@
 // property for the Like button
 @property (nonatomic, strong) LikeButton *likeButton;
 
-
-
-
+// property for the like counter label
+@property (nonatomic, strong) UILabel *likeCounterLabel;
 
 
 
@@ -140,15 +139,6 @@ static NSParagraphStyle *paragraphStyle;
 - (void) layoutSubviews {
     [super layoutSubviews];
     
-//    CGFloat imageHeight = self.mediaItem.image.size.height / self.mediaItem.image.size.width * CGRectGetWidth(self.contentView.bounds);
-//    self.mediaImageView.frame = CGRectMake(0, 0, CGRectGetWidth(self.contentView.bounds), imageHeight);
-//    
-//    CGSize sizeOfUsernameAndCaptionLabel = [self sizeOfString:self.usernameAndCaptionLabel.attributedText];
-//    self.usernameAndCaptionLabel.frame = CGRectMake(0, CGRectGetMaxY(self.mediaImageView.frame), CGRectGetWidth(self.contentView.bounds), sizeOfUsernameAndCaptionLabel.height);
-//    
-//    CGSize sizeOfCommentLabel = [self sizeOfString:self.commentLabel.attributedText];
-//    self.commentLabel.frame = CGRectMake(0, CGRectGetMaxY(self.usernameAndCaptionLabel.frame), CGRectGetWidth(self.bounds), sizeOfCommentLabel.height);
-    
     // Before layout, calculate the intrinsic size of the labels (the size they "want" to be), and add 20 to the height for some vertical padding.
     // In layoutSubviews, we ask the labels for their intrinsic size, add some padding, and set the height constraint constant to that number. (This overwrites the previous 100 value that was set in the initWithStyle method in this file.) The same image calculation logic determines the appropriate height of the image.
     CGSize maxSize = CGSizeMake(CGRectGetWidth(self.bounds), CGFLOAT_MAX);
@@ -180,7 +170,14 @@ static NSParagraphStyle *paragraphStyle;
     self.usernameAndCaptionLabel.attributedText = [self usernameAndCaptionString];
     self.commentLabel.attributedText = [self commentString];
     self.likeButton.likeButtonState = mediaItem.likeState;
+
+    self.likeCounterLabel.text = [NSString stringWithFormat:@"%ld",mediaItem.likeCount];
+
     
+    NSLog(@"likeCount value in MTVC at 195...: %ld", mediaItem.likeCount);
+    
+    self.likeCounterLabel.text = [NSString stringWithFormat:@"%ld",mediaItem.likeCount];
+
     
 }
 
@@ -228,6 +225,12 @@ static NSParagraphStyle *paragraphStyle;
         self.commentLabel = [[UILabel alloc] init];
         self.commentLabel.numberOfLines = 0;
         self.commentLabel.backgroundColor = commentLabelGray;
+ 
+        
+        // create the like counter
+        self.likeCounterLabel = [[UILabel alloc] init];
+        self.likeCounterLabel.backgroundColor = usernameLabelGray;
+        
         
         
         // create teh like button
@@ -235,21 +238,25 @@ static NSParagraphStyle *paragraphStyle;
         [self.likeButton addTarget:self action:@selector(likePressed:) forControlEvents:UIControlEventTouchUpInside];
         self.likeButton.backgroundColor = usernameLabelGray;
        // add the like button to the view hiearchy
-        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton]) {
+        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeCounterLabel, self.likeButton]) {
 
             [self.contentView addSubview:view];
 
             // this property needs to be set to NO when using auto layout
             view.translatesAutoresizingMaskIntoConstraints = NO;
         }
+
+
         
-        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton);
+        
+        
+        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeCounterLabel, _likeButton);
         
         // _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
         
         // Same as above - setting explicit width  for like button of 38
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeCounterLabel(==38)][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
         
         
         // Same as above
@@ -309,9 +316,11 @@ static NSParagraphStyle *paragraphStyle;
     
     NSLog(@"Inside likePressed in MTVC line 310..:");
     
+//    self.likeCounter ++;
+//    NSLog(@"LikeCounter value..: %li", self.likeCounter);
+    
+    
     [self.delegate cellDidPressLikeButton:self];
-    
-    
     
 }
 

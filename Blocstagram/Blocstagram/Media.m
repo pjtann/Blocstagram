@@ -23,6 +23,16 @@
         self.idNumber = mediaDictionary[@"id"];
         self.user = [[User alloc] initWithDictionary:mediaDictionary[@"user"]];
         NSString *standardResolutionImageURLString = mediaDictionary[@"images"][@"standard_resolution"][@"url"];
+        
+    
+        
+        self.likeCount = [mediaDictionary[@"likes"][@"count"]  integerValue];
+                                                   
+        NSLog(@"likeCount value...: %ld", self.likeCount);
+        
+        
+        
+        
         NSURL *standardResolutionImageURL = [NSURL URLWithString:standardResolutionImageURLString];
         
         if (standardResolutionImageURL) {
@@ -98,6 +108,9 @@
         // decode call for the likeState
         self.likeState = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(likeState))];
         
+        self.likeCount = [aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(likeCount))];
+        
+        
         
         
     }
@@ -117,6 +130,9 @@
     [aCoder encodeObject:self.comments forKey:NSStringFromSelector(@selector(comments))];
     // encode call for teh likeState
     [aCoder encodeInteger:self.likeState forKey:NSStringFromSelector(@selector(likeState))];
+    
+    [aCoder encodeInteger:self.likeCount forKey:NSStringFromSelector(@selector(likeCount))];
+    
     
 }
 
