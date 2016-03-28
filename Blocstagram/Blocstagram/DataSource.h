@@ -26,6 +26,7 @@ typedef void (^NewItemCompletionBlock)(NSError *error);
 
 @property (nonatomic, strong, readonly) NSArray *mediaItems;
 
+
 //But how will any class be able to modify the array if it's trapped inside of DataSource? Let's add a method to DataSource which lets other classes delete a media item. Added below method and the class Media declaration above for this purpose.
 
 -(void) deleteMediaItem: (Media *) item;
@@ -40,6 +41,8 @@ typedef void (^NewItemCompletionBlock)(NSError *error);
 // this method will tell instagram about the change to like state, update the media object, and call a completion handler when finished
 -(void) toggleLikeOnMediaItem: (Media *)mediaItem withCompletionHandler:(void(^)(void))completionHandler;
 
+//add a method to the data source to handle comments.
+- (void) commentOnMediaItem:(Media *)mediaItem withCommentText:(NSString *)commentText;
 
 
 +(NSString *) instagramClientID;

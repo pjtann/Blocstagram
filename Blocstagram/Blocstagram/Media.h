@@ -40,6 +40,9 @@ typedef NS_ENUM(NSInteger, MediaDownloadState) {
 // property to keep track of an individual media items download state. Uses "assign" rather than strong or weak in the declaration because it's not an object; it's a simpler type
 @property (nonatomic, assign) MediaDownloadState downloadState;
 
+// Let's add a property to Media to store the comment as it's being written:
+@property (nonatomic, strong) NSString *temporaryComment;
+
 
 
 -(instancetype) initWithDictionary:(NSDictionary *) mediaDictionary;

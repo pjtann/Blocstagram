@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class Media, MediaTableViewCell; // added MediaTableViewCell for MediaTableViewCellDelegate protocol
+@class Media, MediaTableViewCell, ComposeCommentView;
 
 
 // define the protocol
@@ -24,6 +24,12 @@
 -(void) cellDidPressLikeButton:(MediaTableViewCell *) cell;
 
 
+- (void) cellWillStartComposingComment:(MediaTableViewCell *)cell;
+- (void) cell:(MediaTableViewCell *)cell didComposeComment:(NSString *)comment;
+
+
+
+
 @end
 
 
@@ -34,9 +40,15 @@
 // property for the tap image protocol and method
 @property (nonatomic, weak) id <MediaTableViewCellDelegate> delegate;
 
+@property (nonatomic, strong, readonly) ComposeCommentView *commentView;
+
 
 // method to calculate teh precise height for each cell since no two cells are identical
 +(CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width;
+
+// Add a public, readonly property for the comment view and a similar stopComposingComment method:
+- (void) stopComposingComment;
+
 
 
 // We need to set the media item for the cell. When we declare a property like @property (nonatomic, strong) Media *mediaItem;, the compiler generates two hidden methods for us, a getter and a setter. the two method declarations below accomplish this:
@@ -46,5 +58,8 @@
 
 // Set a new media item (the "setter")
 - (void)setMediaItem:(Media *)mediaItem;
+
+
+
 
 @end

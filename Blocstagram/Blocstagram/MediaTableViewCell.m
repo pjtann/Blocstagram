@@ -12,9 +12,10 @@
 #import "User.h"
 #import "LikeButton.h"
 
+#import "ComposeCommentView.h"
 
+@interface MediaTableViewCell () <UIGestureRecognizerDelegate, ComposeCommentViewDelegate>
 
-@interface MediaTableViewCell () <UIGestureRecognizerDelegate> // declare that this class conforms to the gesture recognizer delegate protocol
 
 @property (nonatomic, strong) UIImageView *mediaImageView;
 @property (nonatomic, strong) UILabel *usernameAndCaptionLabel;
@@ -33,6 +34,7 @@
 // property for the Like button
 @property (nonatomic, strong) LikeButton *likeButton;
 
+@property (nonatomic, strong) ComposeCommentView *commentView;
 
 
 
@@ -180,6 +182,8 @@ static NSParagraphStyle *paragraphStyle;
     self.usernameAndCaptionLabel.attributedText = [self usernameAndCaptionString];
     self.commentLabel.attributedText = [self commentString];
     self.likeButton.likeButtonState = mediaItem.likeState;
+    //When the table cell is created or reused, update the text on the comment view in setMediaItem::
+    self.commentView.text = mediaItem.temporaryComment;
     
     
 }
@@ -234,8 +238,14 @@ static NSParagraphStyle *paragraphStyle;
         self.likeButton = [[LikeButton alloc] init];
         [self.likeButton addTarget:self action:@selector(likePressed:) forControlEvents:UIControlEventTouchUpInside];
         self.likeButton.backgroundColor = usernameLabelGray;
-       // add the like button to the view hiearchy
-        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton]) {
+        
+        self.commentView = [[ComposeCommentView alloc] init];
+        self.commentView.delegate = self;
+        
+        // add the like button and the comment view to the view hiearchy
+
+        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton, self.commentView]) {
+                
 
             [self.contentView addSubview:view];
 
@@ -243,7 +253,9 @@ static NSParagraphStyle *paragraphStyle;
             view.translatesAutoresizingMaskIntoConstraints = NO;
         }
         
-        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton);
+            
+        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton, _commentView);
+    
         
         // _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
@@ -254,12 +266,17 @@ static NSParagraphStyle *paragraphStyle;
         
         // Same as above
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_commentLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
+            
+            
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_commentView]|" options:kNilOptions metrics:nil views:viewDictionary]];
+
         
-        // The three views should be stacked vertically, from the top, with no space in between.
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_mediaImageView][_usernameAndCaptionLabel][_commentLabel]"
-                                                                                 options:kNilOptions
-                                                                                 metrics:nil
-                                                                                   views:viewDictionary]];
+        // The three views should be stacked vertically, from the top, with no space in between and now added the new comment view too.
+                                          
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_mediaImageView][_usernameAndCaptionLabel][_commentLabel][_commentView(==100)]"
+                                        options:kNilOptions
+                                        metrics:nil
+                                        views:viewDictionary]];
 
         
      
@@ -362,12 +379,31 @@ static NSParagraphStyle *paragraphStyle;
     [layoutCell setNeedsLayout];
     [layoutCell layoutIfNeeded];
     
-    // get the actual height required for the cell
-    return CGRectGetMaxY(layoutCell.commentLabel.frame);
+    // get the actual height required for the cell. When calculating height, we should now use the bottom of the comment view instead of the comment label. Remember that the height is equal to the Y-coordinate of the bottom of the bottommost view.
+    return CGRectGetMaxY(layoutCell.commentView.frame);
+}
+
+//Implement the delegate methods and stopComposingComment:In both commentViewDidPressCommentButton: and commentViewWillStartEditing:, the cell tells its delegate (the images table controller) that a comment was composed or that the user began editing. In commentView:textDidChange:, we store the text written so far in temporaryComment. This allows a user to scroll up and down the table without losing any partially written comments. If another object tells the cell to stopComposingComment, the cell passes that message to the comment view. This will allow the cell's view controller to dismiss the keyboard by passing a message to the comment editor through the cell.
+#pragma mark - ComposeCommentViewDelegate
+
+- (void) commentViewDidPressCommentButton:(ComposeCommentView *)sender {
+    [self.delegate cell:self didComposeComment:self.mediaItem.temporaryComment];
+}
+
+- (void) commentView:(ComposeCommentView *)sender textDidChange:(NSString *)text {
+    self.mediaItem.temporaryComment = text;
+}
+
+- (void) commentViewWillStartEditing:(ComposeCommentView *)sender {
+    [self.delegate cellWillStartComposingComment:self];
+}
+
+- (void) stopComposingComment {
+    [self.commentView stopComposingComment];
 }
 
 
 
 
-
 @end
+
