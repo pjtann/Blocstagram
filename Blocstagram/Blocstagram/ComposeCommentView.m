@@ -133,6 +133,10 @@
 #pragma mark - Button Target
 
 - (void) commentButtonPressed:(UIButton *) sender {
+    
+    [self animateCommentButton];
+    
+    
     if (self.isWritingComment) {
         [self.textView resignFirstResponder];
         self.textView.userInteractionEnabled = NO;
@@ -168,6 +172,44 @@
 
 
 
+//[UIView animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:]
+
+
+
+// Animate
+//[UIView animateWithDuration:1 delay:0
+-(void) animateCommentButton{
+    
+    NSLog(@"Inside animateCommentButton method..");
+    
+    self.textView.transform = CGAffineTransformIdentity;
+    
+    float degrees = 45.0;
+    float radians = (degrees/180.0) * M_PI;
+
+    
+    
+    [UIView animateWithDuration:1.0
+                          delay:.75
+         usingSpringWithDamping:1
+          initialSpringVelocity:0.0f
+                        options:0 animations:^{
+                            //primaryConstraint.constant = 0;
+                            //[self.view layoutIfNeeded];
+                            NSLog(@"Inside the animateWithDuration..");
+                            self.textView.transform = CGAffineTransformMakeRotation(radians);
+                            
+                            
+                            
+                        }
+                     completion:nil];
+
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             self.textView.transform = CGAffineTransformIdentity;
+                             
+                         }];
+}
 
 
 /*

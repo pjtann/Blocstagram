@@ -79,6 +79,30 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+//
+////[UIView animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:]
+//
+//
+//
+//// Animate
+////[UIView animateWithDuration:1 delay:0
+//-(void) animateCommentButton{
+//[UIView animateWithDuration:1.0
+//                      delay:0.5
+//                    usingSpringWithDamping:1
+//                    initialSpringVelocity:0.0f
+//                    options:0 animations:^{
+//                        //primaryConstraint.constant = 0;
+//                        //[self.view layoutIfNeeded];
+//                        NSLog(@"Inside the animateWithDuration..");
+//                        
+//                    }
+//                 completion:nil];
+//}
+
+
+
+
 -(void) dealloc {
     [[DataSource sharedInstance] removeObserver:self forKeyPath:@"mediaItems"];
     // unregister for notifications
