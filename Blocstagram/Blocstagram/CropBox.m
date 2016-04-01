@@ -8,6 +8,8 @@
 
 #import "CropBox.h"
 
+// adding comments
+
 @interface CropBox ()
 
 @property (nonatomic, strong) NSArray *horizontalLines;
