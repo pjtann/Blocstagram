@@ -12,8 +12,7 @@
 
 @interface MediaFullScreenViewController () <UIScrollViewDelegate>
 
-//declare a property to store the media in
-@property (nonatomic, strong) Media *media;
+
 
 // properties for the tap and double tap gestures
 @property (nonatomic, strong) UITapGestureRecognizer *tap;
@@ -82,9 +81,22 @@
     // set scroll view frame to the view's bounds taking up all the views space
     self.scrollView.frame = self.view.bounds;
     
+    
+    [self recalculateZoomScale];
+}
+
+- (void) recalculateZoomScale {
+    
+    
+    
+    
     // look at the ratio of the scroll views width to the images width and the ration of the scrool views height to the image's height
     CGSize scrollViewFrameSize = self.scrollView.frame.size;
     CGSize scrollViewContentSize = self.scrollView.contentSize;
+    
+    //The two lines we added divide the size dimensions by self.scrollView.zoomScale. This allows subclasses to recalculate the zoom scale for scroll views that are zoomed out.
+    scrollViewContentSize.height /= self.scrollView.zoomScale;
+    scrollViewContentSize.width /= self.scrollView.zoomScale;
     
     CGFloat scaleWidth = scrollViewFrameSize.width / scrollViewContentSize.width;
     CGFloat scaleHeight = scrollViewFrameSize.height / scrollViewContentSize.height;

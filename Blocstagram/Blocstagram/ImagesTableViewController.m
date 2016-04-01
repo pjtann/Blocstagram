@@ -14,7 +14,8 @@
 #import "MediaTableViewCell.h"
 #import "MediaFullScreenViewController.h"
 #import "CameraViewController.h"
-
+#import "CameraViewController.h"
+#import "ImageLibraryViewController.h"
 
 
 
@@ -192,13 +193,27 @@
 
 
 
-#pragma mark - Camera and CameraViewControllerDelegate
+ #pragma mark - Camera, CameraViewControllerDelegate, and ImageLibraryViewControllerDelegate
 // When the button is pressed, present the view controller within a navigation controller and dismiss it with a note when the delegate method is called:
 - (void) cameraPressed:(UIBarButtonItem *) sender {
-    CameraViewController *cameraVC = [[CameraViewController alloc] init];
-    cameraVC.delegate = self;
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:cameraVC];
-    [self presentViewController:nav animated:YES completion:nil];
+
+    UIViewController *imageVC;
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        CameraViewController *cameraVC = [[CameraViewController alloc] init];
+        cameraVC.delegate = self;
+        imageVC = cameraVC;
+    } else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
+        ImageLibraryViewController *imageLibraryVC = [[ImageLibraryViewController alloc] init];
+        imageLibraryVC.delegate = self;
+        imageVC = imageLibraryVC;
+    }
+    
+    if (imageVC) {
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:imageVC];
+        [self presentViewController:nav animated:YES completion:nil];
+    }
+    
     return;
 }
 
@@ -443,6 +458,15 @@
 }
 
 
+- (void) imageLibraryViewController:(ImageLibraryViewController *)imageLibraryViewController didCompleteWithImage:(UIImage *)image {
+    [imageLibraryViewController dismissViewControllerAnimated:YES completion:^{
+        if (image) {
+            NSLog(@"Got an image!");
+        } else {
+            NSLog(@"Closed without an image.");
+        }
+    }];
+}
 
 
 

@@ -12,8 +12,13 @@
 
 @interface MediaFullScreenViewController : UIViewController
 
+//declare a property to store the media in
+@property (nonatomic, strong) Media *media;
+
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *imageView;
+
+- (void) recalculateZoomScale;
 
 
 -(instancetype) initWithMedia:(Media *) media;
