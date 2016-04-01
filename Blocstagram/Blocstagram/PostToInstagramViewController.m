@@ -285,6 +285,20 @@
             [self addCIImageToCollectionView:moodyFilter.outputImage withFilterTitle:NSLocalizedString(@"Moody", @"Moody Filter")];
         }
     }];
+   
+    
+    
+    // Sepia filter
+    
+    [self.photoFilterOperationQueue addOperationWithBlock:^{
+        CIFilter *sepiaFilter = [CIFilter filterWithName:@"CISepiaTone"];
+        
+        if (sepiaFilter) {
+            [sepiaFilter setValue:sourceCIImage forKey:kCIInputImageKey];
+            [self addCIImageToCollectionView:sepiaFilter.outputImage withFilterTitle:NSLocalizedString(@"Sepia", @"Sepia Filter")];
+        }
+    }];
+    
     
     
     // Drunk filter
@@ -380,6 +394,8 @@
             [self addCIImageToCollectionView:composite.outputImage withFilterTitle:NSLocalizedString(@"Film", @"Film Filter")];
         }
     }];
+   
+
     
     
 }
