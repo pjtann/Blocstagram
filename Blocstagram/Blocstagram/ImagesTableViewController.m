@@ -13,11 +13,12 @@
 #import "Comment.h"
 #import "MediaTableViewCell.h"
 #import "MediaFullScreenViewController.h"
+#import "CameraViewController.h"
 
 
 
 
-@interface ImagesTableViewController () <MediaTableViewCellDelegate> // indicates this class conforms to the protocol created in the MediaTableViewCell files
+@interface ImagesTableViewController () <MediaTableViewCellDelegate, CameraViewControllerDelegate> // indicates this class conforms to the protocol created in the MediaTableViewCell files and the camera view
 
 
 @property (nonatomic, weak) UIImageView *lastTappedImageView;
@@ -57,6 +58,17 @@
     
     //In viewDidLoad, we'll request notifications of the keyboard appearing and disappearing. We'll also enable UIScrollViewKeyboardDismissModeInteractive, which lets the user slide the keyboard down like in the Messages app.
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+    
+    // check if any photo capabilities at all are available, and if so, add a camera button. (The camera button won't appear in the simulator.)
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] ||
+        [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
+        UIBarButtonItem *cameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(cameraPressed:)];
+        self.navigationItem.rightBarButtonItem = cameraButton;
+    }
+    
+    
+    
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
@@ -116,12 +128,6 @@
     
 }
 
-
-
-
-
-
-
 -(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if (object == [DataSource sharedInstance] && [keyPath isEqualToString:@"mediaItems"]) {
         // we know mediaItems has changed so let's see what kind of change it is
@@ -180,6 +186,37 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+
+
+
+
+#pragma mark - Camera and CameraViewControllerDelegate
+// When the button is pressed, present the view controller within a navigation controller and dismiss it with a note when the delegate method is called:
+- (void) cameraPressed:(UIBarButtonItem *) sender {
+    CameraViewController *cameraVC = [[CameraViewController alloc] init];
+    cameraVC.delegate = self;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:cameraVC];
+    [self presentViewController:nav animated:YES completion:nil];
+    return;
+}
+
+- (void) cameraViewController:(CameraViewController *)cameraViewController didCompleteWithImage:(UIImage *)image {
+    [cameraViewController dismissViewControllerAnimated:YES completion:^{
+        if (image) {
+            NSLog(@"Got an image!");
+        } else {
+            NSLog(@"Closed without an image.");
+        }
+    }];
+}
+
+
+
+
+
+
 
 #pragma mark - Table view data source
 
@@ -404,6 +441,9 @@
     
     self.lastKeyboardAdjustment = heightToScroll;
 }
+
+
+
 
 
 @end
