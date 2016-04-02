@@ -42,9 +42,14 @@
 
 @property (nonatomic, strong, readonly) ComposeCommentView *commentView;
 
+@property (nonatomic, strong) UITraitCollection *overrideTraitCollection;
+
 
 // method to calculate teh precise height for each cell since no two cells are identical
-+(CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width;
++ (CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width traitCollection:(UITraitCollection *) traitCollection;
+
+
+
 
 // Add a public, readonly property for the comment view and a similar stopComposingComment method:
 - (void) stopComposingComment;

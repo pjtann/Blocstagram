@@ -36,6 +36,8 @@
 
 @property (nonatomic, strong) ComposeCommentView *commentView;
 
+@property (nonatomic, strong) NSArray *horizontallyRegularConstraints;
+@property (nonatomic, strong) NSArray *horizontallyCompactConstraints;
 
 
 
@@ -163,7 +165,19 @@ static NSParagraphStyle *paragraphStyle;
 
     // This third change is especially important: if self.mediaItem.image.size.width is zero, the calculation will cause a divide-by-zero, which is illegal and will cause a crash.
     if (self.mediaItem.image.size.width > 0 && CGRectGetWidth(self.contentView.bounds) > 0) {
+        
+        
+        if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+            /* It's compact! */
             self.imageHeightConstraint.constant = self.mediaItem.image.size.height / self.mediaItem.image.size.width * CGRectGetWidth(self.contentView.bounds);
+        } else if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
+            /* It's regular! */
+            self.imageHeightConstraint.constant = 320;
+        }
+        
+        
+        
+        
     }else {
         self.imageHeightConstraint.constant = 0;
         
@@ -173,6 +187,24 @@ static NSParagraphStyle *paragraphStyle;
     // Hide the line between cells
     self.separatorInset = UIEdgeInsetsMake(0, CGRectGetWidth(self.bounds)/2.0, 0, CGRectGetWidth(self.bounds)/2.0);
 }
+
+
+//we need to update the constraints if the user rotates the device, which we'll do in traitCollectionDidChange::
+- (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+        /* It's compact! */
+        [self.contentView removeConstraints:self.horizontallyRegularConstraints];
+        [self.contentView addConstraints:self.horizontallyCompactConstraints];
+    } else if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
+        /* It's regular */
+        [self.contentView removeConstraints:self.horizontallyCompactConstraints];
+        [self.contentView addConstraints:self.horizontallyRegularConstraints];
+    }
+}
+
+
+
+
 
 // When overriding a setter or getter method for a property as in the method below, you must refer to the implicitly generated IVAR (instance-variable) rather than the property itself. The IVAR will always be named _{propertyName}. Referring to the property will cause an infinite loop.
 
@@ -255,10 +287,36 @@ static NSParagraphStyle *paragraphStyle;
         
             
         NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton, _commentView);
-    
+
         
-        // _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
+        
+        //In the cell's initializer, create two arrays of auto-layout constraints: one for horizontally regular and the other for horizontally compact environments:
+        self.horizontallyCompactConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary];
+        
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:_mediaImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:320];
+        NSLayoutConstraint *centerConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
+                                                                            attribute:NSLayoutAttributeCenterX
+                                                                            relatedBy:0
+                                                                               toItem:_mediaImageView
+                                                                            attribute:NSLayoutAttributeCenterX
+                                                                           multiplier:1
+                                                                             constant:0];
+        
+        self.horizontallyRegularConstraints = @[widthConstraint, centerConstraint];
+        
+        //Add one of the constraint arrays depending on the current size class:
+        if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+            /* It's compact! */
+            [self.contentView addConstraints:self.horizontallyCompactConstraints];
+        } else if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
+            /* It's regular! */
+            [self.contentView addConstraints:self.horizontallyRegularConstraints];
+        }
+  
+        
+        
+        
+        
         
         // Same as above - setting explicit width  for like button of 38
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
@@ -360,7 +418,10 @@ static NSParagraphStyle *paragraphStyle;
 
 
 // We create a local cell and call layoutSubviews on it. Once that method returns, it is appropriately sized to fit all of its contents. We return the height of our temporary dummy cell.
-+ (CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width {
+    + (CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width traitCollection:(UITraitCollection *) traitCollection {
+        
+    
+    
     // Make a cell
     MediaTableViewCell *layoutCell = [[MediaTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"layoutCell"];
 //    
@@ -374,6 +435,8 @@ static NSParagraphStyle *paragraphStyle;
 //    [layoutCell layoutSubviews];
     layoutCell.frame = CGRectMake(0, 0, width, CGRectGetHeight(layoutCell.frame));
     
+    layoutCell.overrideTraitCollection = traitCollection;
+        
     
     // The height will be wherever the bottom of the comments label is
     [layoutCell setNeedsLayout];
@@ -382,6 +445,18 @@ static NSParagraphStyle *paragraphStyle;
     // get the actual height required for the cell. When calculating height, we should now use the bottom of the comment view instead of the comment label. Remember that the height is equal to the Y-coordinate of the bottom of the bottommost view.
     return CGRectGetMaxY(layoutCell.commentView.frame);
 }
+
+
+- (UITraitCollection *) traitCollection {
+    if (self.overrideTraitCollection) {
+        return self.overrideTraitCollection;
+    }
+    
+    return [super traitCollection];
+}
+
+
+
 
 //Implement the delegate methods and stopComposingComment:In both commentViewDidPressCommentButton: and commentViewWillStartEditing:, the cell tells its delegate (the images table controller) that a comment was composed or that the user began editing. In commentView:textDidChange:, we store the text written so far in temporaryComment. This allows a user to scroll up and down the table without losing any partially written comments. If another object tells the cell to stopComposingComment, the cell passes that message to the comment view. This will allow the cell's view controller to dismiss the keyboard by passing a message to the comment editor through the cell.
 #pragma mark - ComposeCommentViewDelegate
