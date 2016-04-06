@@ -18,6 +18,7 @@
 		6D83A1D01CAE18FA002209D9 /* CropImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83A1CF1CAE18FA002209D9 /* CropImageViewController.m */; };
 		6D83A1D31CAE1C7E002209D9 /* ImageLibraryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83A1D21CAE1C7E002209D9 /* ImageLibraryViewController.m */; };
 		6D83A1D61CAF01C3002209D9 /* PostToInstagramViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83A1D51CAF01C3002209D9 /* PostToInstagramViewController.m */; };
+		6D83A1D81CB548D5002209D9 /* UserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83A1D71CB548D5002209D9 /* UserTests.m */; };
 		6D83F38B1C5FF427003D4954 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83F38A1C5FF427003D4954 /* LoginViewController.m */; };
 		6DFF246F1C449A3300D81F6E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF246E1C449A3300D81F6E /* main.m */; };
 		6DFF24721C449A3300D81F6E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF24711C449A3300D81F6E /* AppDelegate.m */; };
@@ -78,6 +79,7 @@
 		6D83A1D21CAE1C7E002209D9 /* ImageLibraryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageLibraryViewController.m; sourceTree = "<group>"; };
 		6D83A1D41CAF01C3002209D9 /* PostToInstagramViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostToInstagramViewController.h; sourceTree = "<group>"; };
 		6D83A1D51CAF01C3002209D9 /* PostToInstagramViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostToInstagramViewController.m; sourceTree = "<group>"; };
+		6D83A1D71CB548D5002209D9 /* UserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTests.m; sourceTree = "<group>"; };
 		6D83F3891C5FF427003D4954 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		6D83F38A1C5FF427003D4954 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		6DFF24691C449A3300D81F6E /* Blocstagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocstagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -217,6 +219,7 @@
 			children = (
 				6DFF24881C449A3300D81F6E /* BlocstagramTests.m */,
 				6DFF24861C449A3300D81F6E /* Supporting Files */,
+				6D83A1D71CB548D5002209D9 /* UserTests.m */,
 			);
 			path = BlocstagramTests;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D83A1D81CB548D5002209D9 /* UserTests.m in Sources */,
 				6DFF24891C449A3300D81F6E /* BlocstagramTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
