@@ -28,6 +28,8 @@
 @property (nonatomic, weak) UIView *lastSelectedCommentView;
 @property (nonatomic, assign) CGFloat lastKeyboardAdjustment;
 
+@property (nonatomic, strong) UITapGestureRecognizer *didTapFormSheetBorder;
+
 
 @end
 
@@ -360,6 +362,19 @@
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 #pragma mark - MediaTableViewCellDelegate
 
 -(void) cell:(MediaTableViewCell *)cell didTapImageView:(UIImageView *)imageView {
@@ -368,13 +383,43 @@
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
         fullScreenVC.modalPresentationStyle = UIModalPresentationFormSheet;
     }
-    
-    
-    
-    
+  
     [self presentViewController:fullScreenVC animated:YES completion:nil];
     
+    
+    self.didTapFormSheetBorder = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureCloseFormSheet:)];
+    
+    
+    //UITapGestureRecognizer *didTapFormSheetBorder = [[UITapGestureRecognizer alloc] initWithTarget:self   action:@selector(tapGestureCloseFormSheet:)];
+    self.didTapFormSheetBorder.numberOfTapsRequired = 1;
+    [imageView addGestureRecognizer: self.didTapFormSheetBorder];
+
+    
 }
+
+
+//method to accept tap to close form sheet of zoom in middle of screen
+-(void) tapGestureCloseFormSheet: (UIGestureRecognizer *) formTapGesture{
+    NSLog(@"Inside tapGestureCloseFormSheet..");
+    //[[self delegate] singleTapOnView];
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // long press method - This will share an image (and a caption if there is one). UIActivityViewController is passed an array of items to share, and then it's presented.
 - (void) cell:(MediaTableViewCell *)cell didLongPressImageView:(UIImageView *)imageView {
