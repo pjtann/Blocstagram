@@ -218,8 +218,8 @@
 			isa = PBXGroup;
 			children = (
 				6DFF24881C449A3300D81F6E /* BlocstagramTests.m */,
-				6DFF24861C449A3300D81F6E /* Supporting Files */,
 				6D83A1D71CB548D5002209D9 /* UserTests.m */,
+				6DFF24861C449A3300D81F6E /* Supporting Files */,
 			);
 			path = BlocstagramTests;
 			sourceTree = "<group>";
