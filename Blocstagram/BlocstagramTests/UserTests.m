@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import "User.h"
+#import "Media.h"
+
 
 
 @interface UserTests : XCTestCase
@@ -42,6 +44,29 @@
     XCTAssertEqualObjects(testUser.fullName, sourceDictionary[@"full_name"], @"The full name should be equal");
     XCTAssertEqualObjects(testUser.profilePictureURL, [NSURL URLWithString:sourceDictionary[@"profile_picture"]], @"The profile picture should be equal");
 }
+
+-(void) testMediaInitializer
+{
+    NSDictionary *mediaSourceDictionary = @{@"id": @"2323"
+                                            //@"user": @"PeterT",
+                                            //@"images": @"1.jpg",
+                                            //@"standard_resolution":@"???",
+                                            //@"url":@"http://www.example.com/1.jpg"
+                                            };
+    Media *testMedia = [[Media alloc] initWithDictionary:mediaSourceDictionary];
+    
+    XCTAssertEqualObjects(testMedia.idNumber, mediaSourceDictionary[@"id"],@"The id should be equal");
+    //XCTAssertEqualObjects(testMedia.user, mediaSourceDictionary[@"user"],@"The username should be equal");
+    //XCTAssertEqual(testMedia.image, mediaSourceDictionary[@"images"],@"The image should be the same");
+    
+                                                                
+    
+                                            
+}
+
+
+
+
 
 
 //- (void)testExample {
