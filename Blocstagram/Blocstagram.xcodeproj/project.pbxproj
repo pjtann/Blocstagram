@@ -20,6 +20,7 @@
 		6D83A1D61CAF01C3002209D9 /* PostToInstagramViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83A1D51CAF01C3002209D9 /* PostToInstagramViewController.m */; };
 		6D83A1D81CB548D5002209D9 /* UserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83A1D71CB548D5002209D9 /* UserTests.m */; };
 		6D83A1DA1CB86582002209D9 /* LaunchImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6D83A1D91CB86582002209D9 /* LaunchImage.jpg */; };
+		6D83A1DC1CB866FA002209D9 /* AppIcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6D83A1DB1CB866FA002209D9 /* AppIcon.jpg */; };
 		6D83F38B1C5FF427003D4954 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D83F38A1C5FF427003D4954 /* LoginViewController.m */; };
 		6DFF246F1C449A3300D81F6E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF246E1C449A3300D81F6E /* main.m */; };
 		6DFF24721C449A3300D81F6E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF24711C449A3300D81F6E /* AppDelegate.m */; };
@@ -82,6 +83,7 @@
 		6D83A1D51CAF01C3002209D9 /* PostToInstagramViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostToInstagramViewController.m; sourceTree = "<group>"; };
 		6D83A1D71CB548D5002209D9 /* UserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTests.m; sourceTree = "<group>"; };
 		6D83A1D91CB86582002209D9 /* LaunchImage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = LaunchImage.jpg; sourceTree = "<group>"; };
+		6D83A1DB1CB866FA002209D9 /* AppIcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = AppIcon.jpg; sourceTree = "<group>"; };
 		6D83F3891C5FF427003D4954 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		6D83F38A1C5FF427003D4954 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		6DFF24691C449A3300D81F6E /* Blocstagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocstagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -237,6 +239,7 @@
 		6DFF24F61C44A53700D81F6E /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6D83A1DB1CB866FA002209D9 /* AppIcon.jpg */,
 				6D83A1D91CB86582002209D9 /* LaunchImage.jpg */,
 				6DFF250F1C47456300D81F6E /* 1.jpg */,
 				6DFF25101C47456300D81F6E /* 2.jpg */,
@@ -358,6 +361,7 @@
 				6DFF251B1C47456300D81F6E /* 3.jpg in Resources */,
 				6DFF251E1C47456300D81F6E /* 6.jpg in Resources */,
 				6DFF25191C47456300D81F6E /* 1.jpg in Resources */,
+				6D83A1DC1CB866FA002209D9 /* AppIcon.jpg in Resources */,
 				6D83A1DA1CB86582002209D9 /* LaunchImage.jpg in Resources */,
 				6DFF247D1C449A3300D81F6E /* LaunchScreen.xib in Resources */,
 				6DFF251D1C47456300D81F6E /* 5.jpg in Resources */,
