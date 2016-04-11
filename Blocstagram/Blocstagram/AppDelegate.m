@@ -11,7 +11,8 @@
 #import "LoginViewController.h"
 #import "DataSource.h"
 
-
+// Just adding a comment to my AppDelegate.m file so that a change will be reflected and I can submit this as the assignment for Foundation 48 Projects Introduction testing a pull request. I've created a branch off my Blocstagram repository "assignment-f48-projectsintro" and will submit it to GitHub as an assignment branch and then as a pull request to Steve Schauer. Not sure how I do that yet if that's just a link I give him or if somehow I send it to him as a notification.
+// Peter T.
 
 
 
